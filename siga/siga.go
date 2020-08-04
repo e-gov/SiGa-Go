@@ -16,8 +16,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/e-gov/SiGa-Go/https"
 	"github.com/pkg/errors"
-
 )
 
 // Conf contains configuration values for the SiGa client.

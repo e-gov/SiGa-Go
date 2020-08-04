@@ -1,0 +1,68 @@
+// Peaprogramm. Teeb pöördumised Riigi allkirjastamisteenuse demo poole.
+package main
+
+import (
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+)
+
+var client http.Client
+
+func main() {
+
+	// Loe kliendi privaatvõti ja sert failidest sisse.
+	clientCert, err := tls.LoadX509KeyPair(
+		"certs/https.cert",
+		"certs/https.key",
+	)
+	if err != nil {
+		fmt.Printf("Viga sertide laadimisel: %v", err)
+		os.Exit(1)
+	}
+
+	// Loe Riigi allkirjastamisteenuse (demo) sert sisse.
+	dsigCert, err := ioutil.ReadFile("certs/dsig.cer")
+	if err != nil {
+		fmt.Printf("Viga Riigi allkirjastamisteenuse (demo): %v\n", err)
+		os.Exit(1)
+	}
+
+	// Koosta usaldusankrute nimekiri.
+	roots := x509.NewCertPool()
+	ok := roots.AppendCertsFromPEM([]byte(dsigCert))
+	if !ok {
+		panic("Viga serdi parsimisel")
+	}
+
+	// Koosta TLS seadistus.
+	tlsConfig := tls.Config{
+		// *x509.CertPool
+		RootCAs:      roots,
+		Certificates: []tls.Certificate{clientCert},
+	}
+	transport := http.Transport{
+		TLSClientConfig: &tlsConfig,
+	}
+
+	// Valmista TLS klient.
+	client = http.Client{
+		Transport: &transport,
+	}
+
+	// Loe SiGa poole pöördumise spetsiifline konf sisse.
+
+}
+
+// Märkmed
+// TLS klient
+// https://medium.com/@sirsean/mutually-authenticated-tls-from-a-go-client-92a117e605a1
+
+// rootCAs koostamine
+// https://golang.org/src/crypto/x509/example_test.go
+
+// Serdi ise valmistamine veebis
+// https://www.selfsignedcertificate.com/

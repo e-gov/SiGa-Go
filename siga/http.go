@@ -16,12 +16,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/e-gov/SiGa-Go/https"
+	"github.com/e-gov/SiGa-Go/https/httpsutil"
 	"github.com/pkg/errors"
-
 )
 
-// httpClient performs HTTP requests using a pre-configured client and injects
-// SiGa authorization headers in them.
+// httpClient on SiGa poole pöörduv HTTPS klient.
 type httpClient struct {
 	client *http.Client
 
@@ -33,6 +33,7 @@ type httpClient struct {
 	now        func() time.Time
 }
 
+// newHTTPClient moodustab conf põhjal SiGa kliendi.
 func newHTTPClient(conf Conf) (*httpClient, error) {
 	c := &httpClient{
 		client: &http.Client{
@@ -61,6 +62,7 @@ func newHTTPClient(conf Conf) (*httpClient, error) {
 	return c, nil
 }
 
+// authHeaders seab SiGa kliendile autoriseerimispäised.
 func (c *httpClient) authHeaders(headers http.Header, method, uri string, body []byte) {
 	now := strconv.FormatInt(c.now().Unix(), 10)
 	hmac := hmac.New(c.hmac, c.key)
@@ -74,6 +76,7 @@ func (c *httpClient) authHeaders(headers http.Header, method, uri string, body [
 	headers.Set("X-Authorization-Signature", hex.EncodeToString(hmac.Sum(nil)))
 }
 
+// do täidab SiGa kliendina päringu.
 func (c *httpClient) do(ctx context.Context, method, uri string, req interface{}, resp interface{}) error {
 	// If a request body is given, then marshal it into memory since we
 	// need to calculate the MAC over it before sending it to the server.
@@ -99,17 +102,17 @@ func (c *httpClient) do(ctx context.Context, method, uri string, req interface{}
 	c.authHeaders(httpReq.Header, method, uri, body)
 
 	// Perform the request.
-	log.Debug().
-		WithString("method", method).
-		WithString("url", httpReq.URL).
-		WithString("contentLength", httpReq.ContentLength).
-		Log(ctx, "request")
+	// log.Debug().
+	// 	WithString("method", method).
+	// 	WithString("url", httpReq.URL).
+	// 	WithString("contentLength", httpReq.ContentLength).
+	// 	Log(ctx, "request")
 	httpResp, err := c.client.Do(httpReq)
 	if err != nil {
 		return errors.Wrap(err, "perform request")
 	}
 	defer httpResp.Body.Close()
-	log.Debug().WithString("status", httpResp.StatusCode).Log(ctx, "response")
+	// log.Debug().WithString("status", httpResp.StatusCode).Log(ctx, "response")
 
 	// Decode the response body into resp or an error struct if the HTTP
 	// status code indicates failure.

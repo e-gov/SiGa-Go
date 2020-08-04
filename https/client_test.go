@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"stash.ria.ee/vis3/vis3-common/pkg/confutil"
+	"github.com/e-gov/SiGa-Go/confutil"
 )
 
 func TestGetJSON_ServerRespondsOK_ResultReceived(t *testing.T) {
