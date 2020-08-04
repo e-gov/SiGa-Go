@@ -10,7 +10,7 @@ import (
 	"net/url"
 
 	"github.com/pkg/errors"
-
+	"github.com/prometheus/common/log"
 )
 
 // Client is the low-level interface provided by SiGa clients.
@@ -74,24 +74,8 @@ type Client interface {
 
 type client struct {
 	http     *httpClient
-	storage  storage
 	profile  string
 	language string
-}
-
-// NewClient configures a new low-level SiGa Client using Ignite as storage.
-// Wrap it with a helper type such as Signer for higher-level functionality.
-//
-// The returned Client also implements heartbeat.Heartbeater.
-func NewClient(conf Conf) (Client, error) {
-	c, err := newClientWithoutStorage(conf)
-	if err != nil {
-		return nil, err
-	}
-	if c.storage, err = newIgniteStorage(context.Background(), conf); err != nil {
-		return nil, err
-	}
-	return c, nil
 }
 
 func newClientWithoutStorage(conf Conf) (*client, error) {
@@ -111,11 +95,6 @@ func newClientWithoutStorage(conf Conf) (*client, error) {
 		return nil, err
 	}
 	return c, nil
-}
-
-// Close closes the Ignite client.
-func (c *client) Close() error {
-	return c.storage.close(context.Background())
 }
 
 // CreateContainer creates a new container in the SiGa service with metadata
@@ -441,4 +420,3 @@ func (c *client) closeContainer(ctx context.Context, session string, mandatory b
 func dataKey(containerID, filename string) string {
 	return containerID + ":" + filename
 }
-
