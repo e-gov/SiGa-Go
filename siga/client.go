@@ -10,6 +10,8 @@ import (
 	"net/url"
 
 	"github.com/pkg/errors"
+
+	"stash.ria.ee/vis3/vis3-common/pkg/log"
 )
 
 // Client is the low-level interface provided by SiGa clients.
@@ -73,16 +75,24 @@ type Client interface {
 
 type client struct {
 	http     *httpClient
-	storage storage
+	storage  storage
 	profile  string
 	language string
 }
 
-// status is the state of an open container.
-type status struct {
-	containerID string
-	filenames   []string
-	signatureID string
+// NewClient configures a new low-level SiGa Client using Ignite as storage.
+// Wrap it with a helper type such as Signer for higher-level functionality.
+//
+// The returned Client also implements heartbeat.Heartbeater.
+func NewClient(conf Conf) (Client, error) {
+	c, err := newClientWithoutStorage(conf)
+	if err != nil {
+		return nil, err
+	}
+	if c.storage, err = newIgniteStorage(context.Background(), conf); err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 func newClientWithoutStorage(conf Conf) (*client, error) {
@@ -104,16 +114,20 @@ func newClientWithoutStorage(conf Conf) (*client, error) {
 	return c, nil
 }
 
+// Close closes the Ignite client.
+func (c *client) Close() error {
+	return c.storage.close(context.Background())
+}
+
 // CreateContainer creates a new container in the SiGa service with metadata
 // about the datafiles and stores the returned container identifier and
-// contents of the datafiles. It will attempt to close any existing
+// contents of the datafiles in Ignite. It will attempt to close any existing
 // containers before this.
-func (c *client) CreateContainer(
-	ctx context.Context, session string, datafiles ...*DataFile) error {
-	// if err := c.closeContainer(ctx, session, false); err != nil {
-	// log.Error().WithError(err).Log(ctx, "close_old_container_error")
-	// Continue with creating the container.
-	// }
+func (c *client) CreateContainer(ctx context.Context, session string, datafiles ...*DataFile) error {
+	if err := c.closeContainer(ctx, session, false); err != nil {
+		log.Error().WithError(err).Log(ctx, "close_old_container_error")
+		// Continue with creating the container.
+	}
 
 	var s status
 	var meta []dataFileMeta
@@ -134,22 +148,22 @@ func (c *client) CreateContainer(
 	}
 	s.containerID = resp.ContainerID
 
-	// if err := c.storage.putStatus(ctx, session, s); err != nil {
-	// Ignore SiGa delete error: best-effort attempt to clean up.
-	//	c.http.do(ctx, http.MethodDelete, uri+"/"+url.PathEscape(s.containerID), nil, nil)
-	//	return errors.WithMessage(err, "put status")
-	// }
+	if err := c.storage.putStatus(ctx, session, s); err != nil {
+		// Ignore SiGa delete error: best-effort attempt to clean up.
+		c.http.do(ctx, http.MethodDelete, uri+"/"+url.PathEscape(s.containerID), nil, nil)
+		return errors.WithMessage(err, "put status")
+	}
 
 	// Do not store datafiles before the status is successfully written:
 	// otherwise we have no reference for cleaning them up later.
-	// for _, datafile := range datafiles {
-	//	key := dataKey(s.containerID, datafile.meta.Name)
-	//	if err := c.storage.putData(ctx, key, datafile.contents); err != nil {
-	// Ignore close error: best-effort attempt to clean up.
-	//		c.CloseContainer(ctx, session)
-	//		return errors.WithMessagef(err, "put data %s", datafile.meta.Name)
-	//	}
-	// }
+	for _, datafile := range datafiles {
+		key := dataKey(s.containerID, datafile.meta.Name)
+		if err := c.storage.putData(ctx, key, datafile.contents); err != nil {
+			// Ignore close error: best-effort attempt to clean up.
+			c.CloseContainer(ctx, session)
+			return errors.WithMessagef(err, "put data %s", datafile.meta.Name)
+		}
+	}
 
 	return nil
 }
@@ -176,7 +190,7 @@ func (c *client) UploadContainer(ctx context.Context, session string, r io.Reade
 	}
 
 	if err := c.closeContainer(ctx, session, false); err != nil {
-		// log.Error().WithError(err).Log(ctx, "close_old_container_error")
+		log.Error().WithError(err).Log(ctx, "close_old_container_error")
 		// Continue with uploading the container.
 	}
 
@@ -196,7 +210,7 @@ func (c *client) UploadContainer(ctx context.Context, session string, r io.Reade
 		s.filenames = append(s.filenames, datafile.meta.Name)
 	}
 	if err := c.storage.putStatus(ctx, session, s); err != nil {
-	// Ignore SiGa delete error: best-effort attempt to clean up.
+		// Ignore SiGa delete error: best-effort attempt to clean up.
 		uri := "/hashcodecontainers/" + url.PathEscape(s.containerID)
 		c.http.do(ctx, http.MethodDelete, uri, nil, nil)
 		return errors.WithMessage(err, "put status")
@@ -207,8 +221,8 @@ func (c *client) UploadContainer(ctx context.Context, session string, r io.Reade
 	for _, datafile := range datafiles {
 		key := dataKey(s.containerID, datafile.meta.Name)
 		if err := c.storage.putData(ctx, key, datafile.contents); err != nil {
-		// Ignore close error: best-effort attempt to clean up.
-		  c.CloseContainer(ctx, session)
+			// Ignore close error: best-effort attempt to clean up.
+			c.CloseContainer(ctx, session)
 			return errors.WithMessagef(err, "put data %s", datafile.meta.Name)
 		}
 	}
@@ -224,7 +238,7 @@ func (c *client) StartRemoteSigning(ctx context.Context, session string, cert []
 
 	s, err := c.storage.getStatus(ctx, session, true)
 	if err != nil {
-	 	return nil, "", errors.WithMessage(err, "get status")
+		return nil, "", errors.WithMessage(err, "get status")
 	}
 
 	uri := "/hashcodecontainers/" + url.PathEscape(s.containerID) + "/remotesigning"
@@ -240,6 +254,11 @@ func (c *client) StartRemoteSigning(ctx context.Context, session string, cert []
 	if err := c.http.do(ctx, http.MethodPost, uri, req, &resp); err != nil {
 		return nil, "", errors.WithMessage(err, "post siga")
 	}
+
+	// TODO: In case we do not trust the SiGa service provider, then this
+	// would be the place to parse resp.DataToSign into a XAdES SignedInfo
+	// structure and validate the DigestValue entries match our data files.
+	// Skip it for now.
 
 	switch resp.DigestAlgorithm {
 	case "SHA512":
@@ -359,8 +378,13 @@ func (c *client) RequestMobileIDSigningStatus(ctx context.Context, session strin
 }
 
 // WriteContainer requests the hashcode container from the SiGa service and
-// converts it to a complete container using the datafile contents.
+// converts it to a complete container using the datafile contents stored in
+// Ignite.
 func (c *client) WriteContainer(ctx context.Context, session string, w io.Writer) error {
+	s, err := c.storage.getStatus(ctx, session, true)
+	if err != nil {
+		return errors.WithMessage(err, "get status")
+	}
 
 	uri := "/hashcodecontainers/" + url.PathEscape(s.containerID)
 	var resp struct {
@@ -385,21 +409,49 @@ func (c *client) WriteContainer(ctx context.Context, session string, w io.Writer
 		"from hashcode")
 }
 
-// CloseContainer deletes the container in the SiGa service.
+// CloseContainer deletes the container in the SiGa service and removes all
+// information about it from Ignite.
 func (c *client) CloseContainer(ctx context.Context, session string) error {
 	return c.closeContainer(ctx, session, true)
 }
 
 func (c *client) closeContainer(ctx context.Context, session string, mandatory bool) error {
+	s, err := c.storage.getStatus(ctx, session, mandatory)
+	if err != nil {
+		return errors.WithMessage(err, "get status")
+	}
+	if s == nil {
+		return nil
+	}
 
 	uri := "/hashcodecontainers/" + url.PathEscape(s.containerID)
 	if err := c.http.do(ctx, http.MethodDelete, uri, nil, nil); err != nil {
 		return errors.WithMessage(err, "delete siga")
 	}
 
+	for _, filename := range s.filenames {
+		key := dataKey(s.containerID, filename)
+		if err := c.storage.removeData(ctx, key); err != nil {
+			return errors.WithMessagef(err, "remove data %s", filename)
+		}
+	}
+
+	return errors.WithMessage(c.storage.removeStatus(ctx, session), "remove status")
 }
 
 func dataKey(containerID, filename string) string {
 	return containerID + ":" + filename
 }
 
+// Heartbeat implements pkg/heartbeat.Heartbeater, checking both the heartbeat
+// of the Ignite client and verifying a HTTP HEAD request to the SiGa service
+// endpoint succeeds.
+func (c *client) Heartbeat(ctx context.Context) error {
+	if ignite, ok := c.storage.(igniteStorage); ok {
+		if err := ignite.client.Heartbeat(ctx); err != nil {
+			return errors.WithMessage(err, "ignite")
+		}
+	}
+	_, err := c.http.client.Head(c.http.url) // Unauthenticated request, ignore status code.
+	return errors.WithMessage(err, "siga")
+}
