@@ -5,13 +5,13 @@ import (
 	"context"
 	"crypto/sha512"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 
 	"github.com/pkg/errors"
 
-	"stash.ria.ee/vis3/vis3-common/pkg/log"
 )
 
 // Client is the low-level interface provided by SiGa clients.
@@ -80,11 +80,22 @@ type client struct {
 	language string
 }
 
+// Testimise eesmärgil ei kasuta Ignite-i, vaid rakenduse enda mälus hoidmist
+// (memStorage).
+func NewClient(conf Conf) (Client, error) {
+	c, err := newClientWithoutStorage(conf)
+	if err != nil {
+		return nil, err
+	}
+	c.storage = newMemStorage()
+	return c, nil
+}
+
 // NewClient configures a new low-level SiGa Client using Ignite as storage.
 // Wrap it with a helper type such as Signer for higher-level functionality.
 //
 // The returned Client also implements heartbeat.Heartbeater.
-func NewClient(conf Conf) (Client, error) {
+/* func NewClient(conf Conf) (Client, error) {
 	c, err := newClientWithoutStorage(conf)
 	if err != nil {
 		return nil, err
@@ -93,8 +104,9 @@ func NewClient(conf Conf) (Client, error) {
 		return nil, err
 	}
 	return c, nil
-}
+} */
 
+// newClientWithoutStorage kutsutakse välja f-ni NewClient poolt.
 func newClientWithoutStorage(conf Conf) (*client, error) {
 	c := &client{
 		profile:  conf.SignatureProfile,
@@ -125,7 +137,7 @@ func (c *client) Close() error {
 // containers before this.
 func (c *client) CreateContainer(ctx context.Context, session string, datafiles ...*DataFile) error {
 	if err := c.closeContainer(ctx, session, false); err != nil {
-		log.Error().WithError(err).Log(ctx, "close_old_container_error")
+		// log.Error().WithError(err).Log(ctx, "close_old_container_error")
 		// Continue with creating the container.
 	}
 
@@ -190,7 +202,7 @@ func (c *client) UploadContainer(ctx context.Context, session string, r io.Reade
 	}
 
 	if err := c.closeContainer(ctx, session, false); err != nil {
-		log.Error().WithError(err).Log(ctx, "close_old_container_error")
+		// log.Error().WithError(err).Log(ctx, "close_old_container_error")
 		// Continue with uploading the container.
 	}
 
@@ -206,6 +218,9 @@ func (c *client) UploadContainer(ctx context.Context, session string, r io.Reade
 	}
 
 	s := status{containerID: resp.ContainerID}
+	// LISATUD:
+	fmt.Println("Konteiner üles laetud. ContainerID:", resp.ContainerID)
+
 	for _, datafile := range datafiles {
 		s.filenames = append(s.filenames, datafile.meta.Name)
 	}
@@ -441,17 +456,4 @@ func (c *client) closeContainer(ctx context.Context, session string, mandatory b
 
 func dataKey(containerID, filename string) string {
 	return containerID + ":" + filename
-}
-
-// Heartbeat implements pkg/heartbeat.Heartbeater, checking both the heartbeat
-// of the Ignite client and verifying a HTTP HEAD request to the SiGa service
-// endpoint succeeds.
-func (c *client) Heartbeat(ctx context.Context) error {
-	if ignite, ok := c.storage.(igniteStorage); ok {
-		if err := ignite.client.Heartbeat(ctx); err != nil {
-			return errors.WithMessage(err, "ignite")
-		}
-	}
-	_, err := c.http.client.Head(c.http.url) // Unauthenticated request, ignore status code.
-	return errors.WithMessage(err, "siga")
 }

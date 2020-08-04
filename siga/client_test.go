@@ -3,6 +3,7 @@ package siga
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -104,13 +105,16 @@ func testClient(t *testing.T) Client {
 		t.Fatal(err)
 	}
 
-	if len(conf.Ignite.Servers) > 0 {
+	// Väljasta kontrolliks sisseloetud konf.
+	fmt.Println(prettyPrint(conf))
+	
+	/* if len(conf.Ignite.Servers) > 0 {
 		c, err := NewClient(conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 		return c
-	}
+	} */
 
 	c, err := newClientWithoutStorage(conf)
 	if err != nil {
@@ -119,3 +123,10 @@ func testClient(t *testing.T) Client {
 	c.storage = newMemStorage()
 	return c
 }
+
+// prettyPrint koostab struct-st i printimisvalmis sõne.
+func prettyPrint(i interface{}) string {
+	s, _ := json.MarshalIndent(i, "", "\t")
+	return string(s)
+}
+
