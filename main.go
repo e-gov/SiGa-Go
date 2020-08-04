@@ -17,55 +17,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Conf contains configuration values for the SiGa client.
-type Conf struct {
-	// ClientConf embeds the configuration for the HTTP client used to
-	// connect to the SiGa service provider.
-	ClientConf https.ClientConf
-
-	// ServiceIdentifier is the identifier used to authorize requests.
-	ServiceIdentifier string
-
-	// ServiceKey is the Base64-encoded signing secret key used to
-	// authorize requests.
-	ServiceKey string
-
-	// HMACAlgorithm is the HMAC algorithm used to authorize requests.
-	// Possible values are "HMAC-SHA256", "HMAC-SHA384", and "HMAC-SHA512".
-	// If HMACAlgorithm is empty, then "HMAC-SHA256" is used.
-	HMACAlgorithm string
-
-	// SignatureProfile is the signature profile used for qualifying
-	// signatures. Possible values are dictated by the SiGa service
-	// provider. If SignatureProfile is empty, then "LT" is used.
-	SignatureProfile string
-
-	// MIDLanguage is the language used for user dialogs in the user's
-	// phone during Mobile-ID signing. Possible values are dictated by the
-	// SiGa service provider. If MIDLanguage is empty, then "EST" is used.
-	MIDLanguage string
-}
-
-// httpClient on net/http Client, millele on lisatud SiGa poole pöördumiseks
-// vajalikud väärtused.
-type httpClient struct {
-	client *http.Client
-
-	url        string
-	identifier string
-	key        []byte
-	algo       string
-	hmac       func() hash.Hash
-	now        func() time.Time
-}
-
-// client on httpClient, millele on lisatud veel väärtused profile ja language.
-type client struct {
-	http     *httpClient
-	profile  string
-	language string
-}
-
 // Peaprogramm.
 func main() {
 	fmt.Println("SiGa-Go peaprogramm")
@@ -73,20 +24,15 @@ func main() {
 	// Loe konf sisse.
 	cFileName := "testdata/siga-abi.json"
 	bytes, err := ioutil.ReadFile(cFileName)
-	switch {
-	case err == nil:
-	case os.IsNotExist(err):
-		fmt.Println("Ei leia faili: ", cFileName)
-		os.Exit(1)
-	default:
-		fmt.Println("Viga faili lugemisel: ", cFileName)
+	if err != nil {
+		fmt.Printf("Viga konf-ifaili %v lugemisel: %v\n", cFileName, err)
 		os.Exit(1)
 	}
 
 	// Parsi konf.
-	var conf Conf
+	var conf siga.Conf
 	if err := json.Unmarshal(bytes, &conf); err != nil {
-		fmt.Println("Viga faili parsimisel: ", cFileName, err)
+		fmt.Println("Viga konf-ifaili parsimisel: ", cFileName, err)
 		os.Exit(1)
 	}
 

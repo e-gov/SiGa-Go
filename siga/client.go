@@ -73,6 +73,7 @@ type Client interface {
 
 type client struct {
 	http     *httpClient
+	storage storage
 	profile  string
 	language string
 }
@@ -194,22 +195,22 @@ func (c *client) UploadContainer(ctx context.Context, session string, r io.Reade
 	for _, datafile := range datafiles {
 		s.filenames = append(s.filenames, datafile.meta.Name)
 	}
-	// if err := c.storage.putStatus(ctx, session, s); err != nil {
+	if err := c.storage.putStatus(ctx, session, s); err != nil {
 	// Ignore SiGa delete error: best-effort attempt to clean up.
-	//	uri := "/hashcodecontainers/" + url.PathEscape(s.containerID)
-	//	c.http.do(ctx, http.MethodDelete, uri, nil, nil)
-	//	return errors.WithMessage(err, "put status")
-	// }
+		uri := "/hashcodecontainers/" + url.PathEscape(s.containerID)
+		c.http.do(ctx, http.MethodDelete, uri, nil, nil)
+		return errors.WithMessage(err, "put status")
+	}
 
 	// Do not store datafiles before the status is successfully written:
 	// otherwise we have no reference for cleaning them up later.
 	for _, datafile := range datafiles {
 		key := dataKey(s.containerID, datafile.meta.Name)
-		//	if err := c.storage.putData(ctx, key, datafile.contents); err != nil {
+		if err := c.storage.putData(ctx, key, datafile.contents); err != nil {
 		// Ignore close error: best-effort attempt to clean up.
-		//		c.CloseContainer(ctx, session)
-		//		return errors.WithMessagef(err, "put data %s", datafile.meta.Name)
-		//	}
+		  c.CloseContainer(ctx, session)
+			return errors.WithMessagef(err, "put data %s", datafile.meta.Name)
+		}
 	}
 
 	return nil
@@ -221,10 +222,10 @@ func (c *client) UploadContainer(ctx context.Context, session string, r io.Reade
 func (c *client) StartRemoteSigning(ctx context.Context, session string, cert []byte) (
 	hash []byte, algorithm string, err error) {
 
-	// s, err := c.storage.getStatus(ctx, session, true)
-	// if err != nil {
-	// 	return nil, "", errors.WithMessage(err, "get status")
-	// }
+	s, err := c.storage.getStatus(ctx, session, true)
+	if err != nil {
+	 	return nil, "", errors.WithMessage(err, "get status")
+	}
 
 	uri := "/hashcodecontainers/" + url.PathEscape(s.containerID) + "/remotesigning"
 	req := map[string]string{
