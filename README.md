@@ -37,6 +37,19 @@ Seadistusfaili struktuur on järgmine:
 
 Näidisrakenduse töö käigus koostatakse allkirjastatud faile. Need on ASiC-E formaadis, failitüübiga `asice` ja asuvad kaustas `testdata`. Allkirjastatud failide uurimiseks saab kasutada ID-kaardi haldusvahendit (DigiDoc4 klienti).
 
+Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine (
+`Example_MobileIDSigning()`). `Example_MobileIDSigning`:
+
+1. moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`)
+2. alustab SiGa-ga seanssi (`session`)
+3. valib allkirjastatava faili (`testdata/example_datafile.txt`)
+4. koostab konteineri (`CreateContainer`)
+5. teeb m-ID-ga allkirjastamise alustamise päringu (`StartMobileIDSigning`). SiGa demo vahendab m-ID allkirjastamise makettteenust.
+6. teeb m-ID-ga allkirjastamise seisundipäringud (`RequestMobileIDSigningStatus`)
+7. salvestab konteineri (`WriteContainer`), faili `testdata/mobile-id.asice`
+8. suleb HTTPS kliendi (`Close`).
+
+
 
 
 

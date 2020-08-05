@@ -21,7 +21,7 @@ import (
 // 3) valib allkirjastatava faili (testdata/example_datafile.txt)
 // 4) koostab konteineri (CreateContainer)
 // 5) teeb m-ID-ga allkirjastamise alustamise päringu
-// (StartMobileIDSigning)
+// (StartMobileIDSigning). SiGa demo vahendab m-ID allkirjastamise makettteenust.
 // 6) teeb m-ID-ga allkirjastamise seisundipäringud
 // (RequestMobileIDSigningStatus)
 // 7) salvestab konteineri (WriteContainer), faili
