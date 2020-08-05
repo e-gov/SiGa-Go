@@ -9,7 +9,7 @@ import (
 	"crypto/x509"
 	"net/http"
 
-	"github.com/e-gov/SiGa-Go/confutil"
+	"stash.ria.ee/vis3/vis3-common/pkg/confutil"
 )
 
 // Transport returns a copy of http.DefaultTransport with custom TLS
