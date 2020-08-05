@@ -12,8 +12,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"stash.ria.ee/vis3/vis3-common/pkg/https/httpsutil"
-	"stash.ria.ee/vis3/vis3-common/pkg/log"
+	"github.com/e-gov/SiGa-Go/https/httpsutil"
 )
 
 // Callback is the callback function type.
@@ -50,7 +49,7 @@ func NewClient(conf ClientConf) Client {
 // for appending parts to the configured base URL.
 func (c *client) Req(ctx context.Context, parts ...string) *Req {
 	url := singleJoiningSlash(c.url, path.Join(parts...))
-	log.Debug().WithString("url", url).Log(ctx, "new_request")
+	// log.Debug().WithString("url", url).Log(ctx, "new_request")
 	return &Req{
 		Client: c,
 		ctx:    ctx,
@@ -79,10 +78,10 @@ func (c *client) Do(r *Req) error {
 	}
 	defer res.Body.Close()
 
-	log.Debug().
-		WithString("url", r.url).
-		WithStringf("status", "%d", res.StatusCode).
-		Log(r.ctx, "got_response")
+	// log.Debug().
+	//	WithString("url", r.url).
+	//	WithStringf("status", "%d", res.StatusCode).
+	//	Log(r.ctx, "got_response")
 
 	return r.Handle(res)
 }

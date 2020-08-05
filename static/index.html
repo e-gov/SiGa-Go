@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE</title>
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+
+    <!-- Material Design icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" 
+      rel="stylesheet">
+
+    <!-- Stiilid -->
+    <link rel='stylesheet' href='siga-go.css'>
+
+    <!-- Skriptid -->
+    <script src='siga-go.js'></script>
+  </head>
+
+  <body onload="init();">
+
+    <h1>SiGa-Go</h1>
+    <p>Riigi allkirjastamisteenuse Go-klient (näiterakendus)</p>
+
+    <!-- Teatepaan -->
+    <div id='Teatepaan' class='paan teabepaan peidetud flex'
+      style=' align-items:start; justify-content: space-between;'>
+      <p id='Teatetekst' class='aarisega'></p>
+      <!-- Sulgemisnupp -->
+      <div id='TeatepaanSulge' class='sulgemisnupuke'>
+        <span>&times;</span>
+      </div>
+    </div>
+
+    <p>Sisesta allkirjastatav tekst:</p>
+    <!-- Tekstisisestusala -->
+    <div id='Tekst' contenteditable='true' spellcheck='false'>
+    </div>
+
+    <!-- Nuppude ala -->
+    <p id='Tekstitootlus'>
+      <span id='Allkirjastanupp' class='nupp disabled' title='Allkirjasta'>
+        <i class="ikoon material-icons green">verified</i>
+      </span>
+
+      <span id='Uusnupp' class='nupp disabled' title='Alusta uut'>
+        <i class="ikoon material-icons tomato">clear</i>
+      </span>  
+
+      <span id='Koodnupp' class='nupp' title='Lähtekood'>
+        <i class="ikoon material-icons">code</i>
+      </span>
+    </p>
+
+  </body>
+
+</html>

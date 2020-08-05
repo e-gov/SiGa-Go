@@ -1,0 +1,126 @@
+body {
+  max-width: 40em;
+  margin: 0 0; 
+  padding: 0.6em 1.5em 6em 2em; 
+}
+body, input {
+font-family: 'Times New Roman', 'Times', serif;
+font-size: 14pt; 
+color: darkslategrey !important;
+line-height: 1.5 !important;
+}  
+
+.tooltip-inner, .vihje {
+background-color: White;
+font-family: 'Roboto', 'Arial', sans-serif !important;
+font-size: 10pt !important;
+color: Gray;
+}
+
+/* Tekstisisestusala */
+#Tekst { 
+display: block;
+height: auto; /* 2.5rem; */
+padding: 0.5rem 0.75rem;
+line-height: 1.25;
+color: darkslategrey;
+border: 1px solid rgba(0, 0, 0, 0.15);
+border-radius: 4px;
+margin-bottom: 1rem; }
+#Tekst:focus {
+border-color: LightGray;
+/* box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset,
+  0 0 8px rgba(220, 180, 220, 0.6); */
+outline: 0 none;
+}
+
+input {
+height: 2.5rem;
+padding: 0 0.5rem;
+line-height: 1.25;
+color: darkslategrey;
+border: 1px solid rgba(0, 0, 0, 0.15);
+border-radius: 4px;
+}
+.green { color: green; }
+.tomato { color: Tomato; }  
+.ikoon { font-family: 'Material Icons';
+font-size: 48px;
+}
+
+/* Tekstitöötluse nupud */
+#Tekstitootlus {
+display: flex;
+align-items: center;
+justify-content: center;
+margin-top: 1rem;
+}
+
+/* Paanid */
+.paan {
+border-radius: 4px; 
+padding: 0 0 0.5rem;
+margin-top: 0.5rem;
+margin-bottom: 0.5rem; 
+}
+.flex {
+display: flex;
+}
+.peidetud { 
+/* display: flex; ülekirjutamiseks */
+display: none !important;
+}
+.sulgemisnupuke {
+align-self: flex-start;
+padding: 0 0.5rem 0.5rem 0.5rem;
+cursor: pointer;
+font-family: Arial, sans-serif;
+font-size: 16pt;
+font-weight: bold;
+color: Gray;
+}
+
+/* Salvestuspaan */
+#St {
+line-height: 1.0 !important;
+}
+
+/* Teave */
+.teabepaan {
+border: 1px solid darkgray;
+background-color: honeydew;
+}
+.aarisega {
+margin: 0.8rem;
+}
+
+/* Nupud */
+.nupp { margin: 0.5rem 0.5rem;
+cursor: pointer;
+color: darkgray;
+}
+.disabled { 
+color: Gainsboro !important;
+cursor: auto;
+}
+
+/* Lingid */
+a, a:hover, a:active, a:visited {
+color: darkgray !important;
+text-decoration: underline;
+text-decoration-style: dashed;
+}
+
+/* Täheloendur */
+.Loendur {
+color: darkgray;
+padding: 2px;
+font-family: 'Courier New', monospace;
+font-size: 12pt;
+}
+.klahv {
+border-radius: 3px;
+padding-left: 1px; padding-right: 1px;
+border: 1px solid darkslategray;
+font-family: 'Courier New', monospace;
+}

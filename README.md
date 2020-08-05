@@ -6,6 +6,8 @@ Riigi allkirjastamisteenus (lühidalt SiGa) võimaldab koostada nõuetekohase ko
 
 Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`).
 
+![kuvatõmmis](docs/FE-kuva-01.png)
+
 ## Kasutamine
 
 1) Klooni repo masinasse. Masinas peab olema paigaldatud Go.

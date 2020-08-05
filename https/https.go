@@ -6,7 +6,7 @@ package https
 import (
 	"time"
 
-	"stash.ria.ee/vis3/vis3-common/pkg/confutil"
+	"github.com/e-gov/SiGa-Go/confutil"
 )
 
 // Default timeouts used if the corresponding values in Conf are zero.
