@@ -20,25 +20,26 @@ type storage interface {
 	close(ctx context.Context) error
 }
 
-// status is the state of an open container.
-type status struct {
-	containerID string
-	filenames   []string
-	signatureID string
-}
-
-// memStorage implements storage in memory for testing.
-type memStorage struct {
-	status map[string]status
-	data   map[string][]byte
-}
-
+// newMemStorage moodustab SiGa-ga suhtlemiseks vajaliku mälustruktuuri.
 func newMemStorage() storage {
 	return memStorage{
 		status: make(map[string]status),
 		data:   make(map[string][]byte),
 	}
 }
+
+// status is the state of an open container.
+type status struct {
+	containerID string
+	filenames   []string
+	signatureID string
+}	
+
+// memStorage implements storage in memory for testing.
+type memStorage struct {
+	status map[string]status
+	data   map[string][]byte
+}	
 
 func (s memStorage) putStatus(ctx context.Context, session string, status status) error {
 	s.status[session] = status

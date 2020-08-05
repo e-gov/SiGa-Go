@@ -1,4 +1,4 @@
-package siga
+package main
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/e-gov/SiGa-Go/siga"
 	"github.com/e-gov/SiGa-Go/abi"
 )
 
@@ -15,7 +16,7 @@ import (
 // allkirjastamist.
 // Selleks:
 // 1) moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise
-// HTTPS kliendi (TestClient)
+// HTTPS kliendi (CreateSIGAClient)
 // 2) alustab SiGa-ga seanssi (session)
 // 3) valib allkirjastatava faili (testdata/example_datafile.txt)
 // 4) koostab konteineri (CreateContainer)
@@ -28,12 +29,12 @@ import (
 // 8) suleb HTTPS kliendi (Close).
 func Example_MobileIDSigning() {
 	// given
-	c := TestClient()
+	c := CreateSIGAClient()
 	defer c.Close()
 
 	ctx := context.Background()
 	const session = "TestClient_MobileIDSigning_Succeeds"
-	datafile, err := ReadDataFile("testdata/example_datafile.txt")
+	datafile, err := siga.ReadDataFile("testdata/example_datafile.txt")
 	if err != nil {
 		fmt.Println("Example_MobileIDSigning: ", err)
 		os.Exit(1)
@@ -111,19 +112,19 @@ func Example_MobileIDSigning() {
 }
 */
 
-// TestClient return a client connected to the test server specified in
-// testdata/siga.json. If no such file exists, then testClient skips the test.
-//
-// If the configuration contains any Ignite servers, then those are used for
-// storage, otherwise memory storage is used instead.
-func TestClient() Client {
+// CreateSIGAClient:
+// 1) loeb seadistusfaili testdata/siga.json;
+// 2) moodustab HTTPS kliendi SiGa poole pöördumiseks.
+func CreateSIGAClient() siga.Client {
+	// Loe seadistusfail.
 	bytes, err := ioutil.ReadFile("testdata/siga.json")
 	if err != nil {
 		fmt.Println("TestClient: Viga seadistusfaili lugemisel: ", err)
 		os.Exit(1)
 	}
 
-	var conf Conf
+	// Parsi seadistusfail.
+	var conf siga.Conf
 	if err := json.Unmarshal(bytes, &conf); err != nil {
 		fmt.Println("TestClient: Viga seadistusfaili parsimisel: ", err)
 		os.Exit(1)
@@ -131,21 +132,13 @@ func TestClient() Client {
 
 	// Väljasta kontrolliks sisseloetud konf.
 	fmt.Println(abi.PrettyPrint(conf))
-	
-	/* if len(conf.Ignite.Servers) > 0 {
-		c, err := NewClient(conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-		return c
-	} */
 
-	c, err := newClientWithoutStorage(conf)
+	// Moodusta HTTPS klient SiGa-ga suhtlemiseks.
+	c, err := siga.NewClient(conf)
 	if err != nil {
-		fmt.Println("TestClient: ", err)
+		fmt.Println("TestClient: Viga SiGa kliendi moodustamisel: ", err)
 		os.Exit(1)
 	}
-	c.storage = newMemStorage()
 	return c
 }
 

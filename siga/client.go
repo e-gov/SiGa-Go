@@ -80,8 +80,8 @@ type client struct {
 	language string
 }
 
-// Testimise eesmärgil ei kasuta Ignite-i, vaid rakenduse enda mälus hoidmist
-// (memStorage).
+// NewClient moodustab moodustab SiGa-ga suhtlemiseks HTTPS kliendi.
+// Kliendil on võime hoida suhtluse olekut.
 func NewClient(conf Conf) (Client, error) {
 	c, err := newClientWithoutStorage(conf)
 	if err != nil {
@@ -91,22 +91,7 @@ func NewClient(conf Conf) (Client, error) {
 	return c, nil
 }
 
-// NewClient configures a new low-level SiGa Client using Ignite as storage.
-// Wrap it with a helper type such as Signer for higher-level functionality.
-//
-// The returned Client also implements heartbeat.Heartbeater.
-/* func NewClient(conf Conf) (Client, error) {
-	c, err := newClientWithoutStorage(conf)
-	if err != nil {
-		return nil, err
-	}
-	if c.storage, err = newIgniteStorage(context.Background(), conf); err != nil {
-		return nil, err
-	}
-	return c, nil
-} */
-
-// newClientWithoutStorage kutsutakse välja f-ni NewClient poolt.
+// newClientWithoutStorage moodustab HTTPS kliendi SiGa-ga suhtlemiseks.
 func newClientWithoutStorage(conf Conf) (*client, error) {
 	c := &client{
 		profile:  conf.SignatureProfile,
