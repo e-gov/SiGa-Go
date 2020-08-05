@@ -64,18 +64,86 @@ hoitavat lihtsat struktuuri. Kuid kood on struktureeritud nii, et vajadusel saab
 kasutada ka Ignite hajusmälu (ei ole käesolevas repos avaldatud).
 
 Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine (
-`Example_MobileIDSigning()`). `Example_MobileIDSigning`:
+`Example_MobileIDSigning()`). Voog on järgmine:
 
-1. moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`)
-2. alustab SiGa-ga seanssi (`session`)
-3. valib allkirjastatava faili (`testdata/example_datafile.txt`)
-4. koostab konteineri (`CreateContainer`)
-5. teeb m-ID-ga allkirjastamise alustamise päringu (`StartMobileIDSigning`). SiGa demo vahendab m-ID allkirjastamise makettteenust.
-6. teeb m-ID-ga allkirjastamise seisundipäringud (`RequestMobileIDSigningStatus`)
-7. salvestab konteineri (`WriteContainer`), faili `testdata/mobile-id.asice`
-8. suleb HTTPS kliendi (`Close`).
+1  moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`)
 
+2  alustab SiGa-ga seanssi (seansi ID `session`, seansiolekukirje `status` seansilaos `storage`)
 
+3  valib allkirjastatava faili (`testdata/example_datafile.txt`)
+
+4  teeb konteineri koostamise päringu SiGa-sse (`CreateContainer`). Päring:
+
+`POST` `/hashcodecontainers`
+
+5 teeb SiGa-sse m-ID-ga allkirjastamise alustamise päringu (`StartMobileIDSigning`). SiGa demo vahendab m-ID allkirjastamise makettteenust. Päring:
+
+`POST` `/hashcodecontainers/{containerID}/mobileidsigning`
+
+6  teeb SiGa-sse m-ID-ga allkirjastamise seisundipäringud (`RequestMobileIDSigningStatus`). Päring:
+
+`GET` `/hashcodecontainers/{containerID}/mobileidsigning/{signatureID}/status`
+
+7  salvestab konteineri (`WriteContainer`), faili `testdata/mobile-id.asice`. Päring:
+
+`GET` `/hashcodecontainers/{containerID}`
+
+8  kustutab konteineri SiGa-st. Päring:
+
+`DELETE` `/hashcodecontainers/{containerID}`
+
+9  suleb HTTPS kliendi (`Close`).
+
+Näiteallkirjastamisel kasutatakse m-ID allkirjastamise testteenust. 
+
+Voog ei sisalda (praegu) allkirjastamise õnnestumise kinnituse pärimist (`GET` `/hashcodecontainers/{containerId}/validationreport`).
+
+Seejärel tehakse näitlikult läbi ID-kaardiga allkirjastamine (
+`Example_IDCardSigning()`). Voog on järgmine:
+
+1  valib allkirjastatava faili (`testdata/example_datafile.txt`)
+
+2  esitab allkirjastatava faili kasutajale, koos nupuga "Allkirjasta ID-kaardiga".
+
+Kasutaja tutvub failiga, vajutab nupule. Rakenduse sirvikupool teeb päringu (P1) rakenduse serveripoolele.
+
+3  arvutab faili räsi.
+
+4  moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`)
+
+5  alustab SiGa-ga seanssi (seansi ID `session`, seansiolekukirje `status` seansilaos `storage`)
+
+6  teeb konteineri koostamise päringu SiGa-sse (`CreateContainer`). Päring:
+
+`POST` `/hashcodecontainers`
+
+7  saadab päringu P1 vastuse sirvikupoolele.
+
+8  sirvikupool korraldab serdi valimise. Sirvikupool saadab serdi serveripoolele (päring P2).
+
+9  saadab serdi SiGa-sse. Päring:
+
+`POST /hascodecontainers/{containerid}/remotesigning`
+
+10  saadab SiGa-st saadud vastuse sirvikupoolele.
+
+11  sirvikupool korraldab PIN2 küsimise ja allkirja andmise. Saadab allkirjaväärtuse serveripoolele.
+
+12  saadab allkirjaväärtuse SiGa-sse.
+
+`PUT /hascodecontainers/{containerid}/remotesigning/generatedSignatureId`
+
+13  salvestab konteineri (`WriteContainer`), faili `testdata/id-card.asice`. Päring:
+
+`GET` `/hashcodecontainers/{containerID}`
+
+14  kustutab konteineri SiGa-st. Päring:
+
+`DELETE` `/hashcodecontainers/{containerID}`
+
+15  suleb HTTPS kliendi (`Close`).
+
+ 
 
 
 

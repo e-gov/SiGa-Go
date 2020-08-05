@@ -422,7 +422,7 @@ func (c *client) WriteContainer(
 	var resp struct {
 		Container []byte `json:"container"`
 	}
-	// Täida konteineri allalaadimise päring.
+	// Täida konteineri allalaadimise päring (GET).
 	if err := c.http.do(ctx, http.MethodGet, uri, nil, &resp); err != nil {
 		return errors.WithMessage(err, "get siga")
 	}
