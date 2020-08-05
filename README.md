@@ -1,5 +1,3 @@
-# SiGa-Go
-
 SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 
 Riigi allkirjastamisteenus (lühidalt SiGa) võimaldab koostada nõuetekohase konteineri (ASiC-E vormingus), pöörduda m-ID allkirjastamisteenuse poole ja saada allkirja koosseisus nõutav ajatempel. Vt lähemalt SiGa [tehniline dokumentatsioon](https://open-eid.github.io/allkirjastamisteenus/).
