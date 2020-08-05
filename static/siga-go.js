@@ -4,7 +4,6 @@
 function init() {
 
   seaTeabepaanideKasitlejad();
-  seaRedaktoriKasitlejad();
   seaTekstinupukasitlejad();
 
 }
@@ -29,11 +28,22 @@ function seaTeabepaanideKasitlejad() {
 // Sea sisestatava teksti käsitlejad ('Uus', 'Vaheta pooled', 'Salvesta').
 function seaTekstinupukasitlejad() {
 
-  $('#Uusnupp').click(() => {
-    $('#Tekst').focus();
-  });
-
   $('#Allkirjastanupp').click(() => {
+    fetch('https://localhost:8080/p1', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        tekst: document.getElementById("Tekstisisestusala").innerText
+      })
+    })
+      .then(response => {
+        console.log(response)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   });
 }
 
@@ -42,3 +52,11 @@ function kuvaTeade(t) {
   $('#Teatetekst').text(t);
   $('#Teatepaan').removeClass('peidetud');
 }
+
+// Märkmed
+
+// Using Fetch API
+// https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+
+// Fetch (vigane näide!)
+// https://flaviocopes.com/how-to-post-api-javascript/

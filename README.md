@@ -16,17 +16,17 @@ Järgnevad juhised on rakenduse evitamiseks lokaalses masinas (`localhost`).
 
 3) Valmista rakendusele serdid. Rakendus nõuab serti (täpsemini, serdiahelat) failis `certs/localhostchain.cert` ja privaatvõtit failis `certs/localhost.key`.
 
-4) Mine rakenduse kausta ja käivita rakendus:
+4) Paigalda veebisirvijasse CA sert. Chrome puhul sisesta aadressireale `chrome://settings/privacy`, vajuta jaotises `Privacy and Security` `more`-nupule, vali `Manage Certificates`, `Trusted Root Authorities`, `Import`. 
+
+5) Mine rakenduse kausta ja käivita rakendus:
 
 `go run .`
 
-5) Ava rakendus veebisirvijas:
+6) Ava rakendus veebisirvijas:
 
 `https://localhost:8080`
 
-Aktsepteeri turvaerand (või paigalda rakenduse CA sert veebisirvijasse usaldusankruks).
-
-6) Tutvu rakenduse poolt loodud, allkirjastatud failidega. Vt lähemalt allpool "Näitefailid".
+7) Tutvu rakenduse poolt loodud, allkirjastatud failidega. Vt lähemalt allpool "Näitefailid".
 
 Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
 
@@ -112,18 +112,17 @@ Voog ei sisalda (praegu) allkirjastamise õnnestumise kinnituse pärimist (`GET`
 
 ## ID-kaardiga allkirjastamine
 
-Seejärel tehakse näitlikult läbi ID-kaardiga allkirjastamine (
-`Example_IDCardSigning()`). Voog on järgmine:
+ID-kaardiga allkirjastamise (`Example_IDCardSigning()`) voog on järgmine:
 
-1  valib allkirjastatava faili (`testdata/example_datafile.txt`)
+1  rakenduse kasutaja sisestab kuvavormil allkirjastatava teksti.
 
-2  esitab allkirjastatava faili kasutajale, koos nupuga "Allkirjasta ID-kaardiga".
+2  kasutaja vajutab nupule "Allkirjasta". Rakenduse sirvikupool saadab teksti POST päringuga rakenduse serveripoolele:
 
-Kasutaja tutvub failiga, vajutab nupule. Rakenduse sirvikupool teeb päringu (P1) rakenduse serveripoolele.
+`POST localhost:8080/p1`
 
-3  arvutab faili räsi.
+3  rakenduse serveripool moodustab sirvikust saadetust tekstist allkirjakonteinerisse pandava fail koos metaandmetega
 
-4  moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`)
+4  rakenduse serveripool moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`) ja
 
 5  alustab SiGa-ga seanssi (seansi ID `session`, seansiolekukirje `status` seansilaos `storage`)
 

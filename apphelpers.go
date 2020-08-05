@@ -1,16 +1,16 @@
 package main
 
 import (
-	// "context"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	// "time"
+	"strings"
 
-	// "github.com/e-gov/SiGa-Go/siga"
+	"github.com/e-gov/SiGa-Go/siga"
 	"github.com/e-gov/SiGa-Go/https"
 	// "github.com/e-gov/SiGa-Go/abi"
 )
@@ -59,13 +59,67 @@ func CreateServer() {
 
 	// Moodusta server
 	http.Handle("/", http.FileServer(http.Dir("./static")))
+	http.HandleFunc("/p1", p1Handler)
 	http.HandleFunc("/abi", handler)
 	log.Fatal(http.ListenAndServeTLS(
 		":8080",
 		"certs/localhostchain.cert",
 		"certs/localhost.key",
 		nil))
+}
 
+// p1Handler võtab vastu sirvikust saadetud allkirjastatava teksti ja 
+// moodustab (SiGa poole pöördumisega) konteineri. 
+func p1Handler(w http.ResponseWriter, req *http.Request) {
+
+	// Vastuvõetava päringu keha struktuur.
+	type req_struct struct {
+		Tekst string
+	}
+
+	// Loe päringu keha sisse.
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		panic(err)
+	}
+	log.Println("P1 päringu keha: ", string(body))
+
+	// Parsi JSON.
+	var t req_struct
+	err = json.Unmarshal(body, &t)
+	if err != nil {
+		panic(err)
+	}
+	log.Println(t.Tekst)
+
+	// Tühi tekst?
+	if len(t.Tekst) == 0 {
+		fmt.Println("Tühja teksti ei saa allkirjastada")
+		return
+	}
+
+	// Moodusta DataFile (allkirjakonteinerisse pandav fail koos metaandmetega)
+	datafile, err := siga.NewDataFile("fail.txt", strings.NewReader(t.Tekst))
+	if err != nil {
+		log.Println("Allkirjakonteinerisse pandava fail moodustamine ebaõnnestus")
+		return
+	}
+
+	// Loo SiGa klient.
+	c := CreateSIGAClient()
+	defer c.Close()
+
+	// Loo seanss.
+	ctx := context.Background()
+	const session = "Example_IDCardSigning"
+
+	// Koosta konteiner, pöördumisega SiGa poole.
+	if err = c.CreateContainer(ctx, session, datafile); err != nil {
+		fmt.Println("Example_IDCardSigning: ", err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Päring töödeldud")
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +128,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 // CreateSIGAClient moodustab HTTPS kliendi SiGa poole pöördumiseks.
 // Selleks loeb sisse SiGa kliendi konf-i, failist testdata/siga.json.
-/* func CreateSIGAClient() siga.Client {
+func CreateSIGAClient() siga.Client {
 	// Loe seadistusfail.
 	bytes, err := ioutil.ReadFile("testdata/siga.json")
 	if err != nil {
@@ -82,7 +136,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 
-	var conf siga.conf
+	var conf siga.Conf
 
 	// Parsi seadistusfail.
 	if err := json.Unmarshal(bytes, &conf); err != nil {
@@ -100,9 +154,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	return c
-} */
+}
 
 // Märkmed
+
+// POST JSON päringu töötlemine Go-s
+// https://stackoverflow.com/questions/15672556/handling-json-post-request-in-go
 
 // func ListenAndServeTLS
 // https://pkg.go.dev/net/http?tab=doc#ListenAndServeTLS

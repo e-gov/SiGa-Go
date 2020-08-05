@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -157,6 +158,8 @@ func (c *client) CreateContainer(
 
 	// Salvesta SiGa-st saadud konteineri ID.
 	s.containerID = resp.ContainerID
+
+	log.Println("CreateContainer: SiGa-s loodud konteiner ID: ", s.containerID)
 
 	if err := c.storage.putStatus(ctx, session, s); err != nil {
 		// Ignore SiGa delete error: best-effort attempt to clean up.
