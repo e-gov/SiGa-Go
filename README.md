@@ -8,15 +8,25 @@ Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.
 
 ## Kasutamine
 
+Järgnevad juhised on rakenduse evitamiseks lokaalses masinas (`localhost`).
+
 1) Klooni repo masinasse. Masinas peab olema paigaldatud Go.
 
 2) Koosta rakenduse seadistusfail `siga.json`. Vt lähemalt allpool "Seadistusfail".
 
-3) Mine rakenduse kausta ja käivita rakendus:
+3) Valmista rakendusele serdid. Rakendus nõuab serti (täpsemini, serdiahelat) failis `certs/localhostchain.cert` ja privaatvõtit failis `certs/localhost.key`.
+
+4) Mine rakenduse kausta ja käivita rakendus:
 
 `go run .`
 
-4) Tutvu rakenduse poolt loodud, allkirjastatud failidega. Vt lähemalt allpool "Näitefailid".
+5) Ava rakendus veebisirvijas:
+
+`https://localhost:8080`
+
+Aktsepteeri turvaerand (või paigalda rakenduse CA sert veebisirvijasse usaldusankruks).
+
+6) Tutvu rakenduse poolt loodud, allkirjastatud failidega. Vt lähemalt allpool "Näitefailid".
 
 Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
 
@@ -63,6 +73,8 @@ paigaldatav kõrgkäideldavana s.t klastrina. Seansimäluks kasutatakse rakendus
 hoitavat lihtsat struktuuri. Kuid kood on struktureeritud nii, et vajadusel saab
 kasutada ka Ignite hajusmälu (ei ole käesolevas repos avaldatud).
 
+## Allkirjastamine m-ID-ga
+
 Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine (
 `Example_MobileIDSigning()`). Voog on järgmine:
 
@@ -97,6 +109,8 @@ Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine 
 Näiteallkirjastamisel kasutatakse m-ID allkirjastamise testteenust. 
 
 Voog ei sisalda (praegu) allkirjastamise õnnestumise kinnituse pärimist (`GET` `/hashcodecontainers/{containerId}/validationreport`).
+
+## ID-kaardiga allkirjastamine
 
 Seejärel tehakse näitlikult läbi ID-kaardiga allkirjastamine (
 `Example_IDCardSigning()`). Voog on järgmine:
