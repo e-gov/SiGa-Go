@@ -36,31 +36,36 @@ import (
 }
 */
 
-// CreateSIGAClient:
-// 1) loeb seadistusfaili testdata/siga.json;
-// 2) moodustab HTTPS kliendi SiGa poole pöördumiseks.
-func CreateSIGAClient() siga.Client {
+// LoadAppConf loeb seadistuse, failist testdata/siga.json.
+func LoadAppConf() {
 	// Loe seadistusfail.
 	bytes, err := ioutil.ReadFile("testdata/siga.json")
 	if err != nil {
-		fmt.Println("TestClient: Viga seadistusfaili lugemisel: ", err)
+		fmt.Println("LaeKonf: Viga seadistusfaili lugemisel: ", err)
 		os.Exit(1)
 	}
 
 	// Parsi seadistusfail.
-	var conf siga.Conf
-	if err := json.Unmarshal(bytes, &conf); err != nil {
-		fmt.Println("TestClient: Viga seadistusfaili parsimisel: ", err)
+	if err := json.Unmarshal(bytes, &AppConf); err != nil {
+		fmt.Println("LaeKonf: Viga seadistusfaili parsimisel: ", err)
 		os.Exit(1)
 	}
 
 	// Väljasta kontrolliks sisseloetud konf.
-	// fmt.Println(abi.PrettyPrint(conf))
+	// fmt.Println(abi.PrettyPrint(AppConf))
+}
 
+// CreateServer moodustab HTTPS serveri sirvikust tulevate päringute teenindamiseks.
+func CreateServer() {
+	
+}
+
+// CreateSIGAClient moodustab HTTPS kliendi SiGa poole pöördumiseks.
+func CreateSIGAClient() siga.Client {
 	// Moodusta HTTPS klient SiGa-ga suhtlemiseks.
-	c, err := siga.NewClient(conf)
+	c, err := siga.NewClient(AppConf)
 	if err != nil {
-		fmt.Println("TestClient: Viga SiGa kliendi moodustamisel: ", err)
+		fmt.Println("CreateSigaClient: Viga SiGa kliendi moodustamisel: ", err)
 		os.Exit(1)
 	}
 	return c
