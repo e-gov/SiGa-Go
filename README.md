@@ -8,7 +8,17 @@ Riigi allkirjastamisteenus (lühidalt SiGa) võimaldab koostada nõuetekohase ko
 
 1) Klooni repo masinasse. Masinas peab olema paigaldatud Go.
 
-2) Koosta rakenduse seadistusfail `siga.json`.
+2) Koosta rakenduse seadistusfail `siga.json`. Vt lähemalt allpool "Seadistusfail".
+
+3) Mine rakenduse kausta ja käivita rakendus:
+
+`go run .`
+
+4) Tutvu rakenduse poolt loodud, allkirjastatud failidega. Vt lähemalt allpool "Näitefailid".
+
+Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
+
+## Seadistusfail
 
 Seadistusfail peab asuma: `testdata/siga.json`. Seadistusfail sisaldab rakendusele SiGa-s antud konto andmeid. Seetõttu seadistusfail ei ole laetud üles avalikku reposse.
 
@@ -35,7 +45,11 @@ Seadistusfaili struktuur on järgmine:
 
 `rootCAs` on SiGa serveri sert.
 
+## Näitefailid
+
 Näidisrakenduse töö käigus koostatakse allkirjastatud faile. Need on ASiC-E formaadis, failitüübiga `asice` ja asuvad kaustas `testdata`. Allkirjastatud failide uurimiseks saab kasutada ID-kaardi haldusvahendit (DigiDoc4 klienti).
+
+## Detailne kirjeldus
 
 Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine (
 `Example_MobileIDSigning()`). `Example_MobileIDSigning`:
