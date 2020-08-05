@@ -120,19 +120,28 @@ func (c *client) Close() error {
 // about the datafiles and stores the returned container identifier and
 // contents of the datafiles in SiGa client storage.
 // It will attempt to close any existing containers before this.
-func (c *client) CreateContainer(ctx context.Context, session string, datafiles ...*DataFile) error {
+// Konteiner luuakse räsikujul (hash form),
+// vt: https://github.com/open-eid/SiGa/wiki/Hashcode-container-form.
+func (c *client) CreateContainer(
+	ctx context.Context,
+	session string,
+	datafiles ...*DataFile) error {
+
+	// Sule eelmine konteiner, kui see eksisteerib.	
 	if err := c.closeContainer(ctx, session, false); err != nil {
 		// log.Error().WithError(err).Log(ctx, "close_old_container_error")
 		// Continue with creating the container.
 	}
 
-	var s status
+	var s status // Konteineri olek.
+	// Kogu SiGa-sse saadetav metateave andmefailide kohta.
 	var meta []dataFileMeta
 	for _, datafile := range datafiles {
 		s.filenames = append(s.filenames, datafile.meta.Name)
 		meta = append(meta, datafile.meta)
 	}
 
+	// Valmista ette päring SiGa poole.
 	const uri = "/hashcodecontainers"
 	req := map[string][]dataFileMeta{
 		"dataFiles": meta,
@@ -140,9 +149,13 @@ func (c *client) CreateContainer(ctx context.Context, session string, datafiles 
 	var resp struct {
 		ContainerID string `json:"containerId"`
 	}
+
+	// Tee päring SiGa poole.
 	if err := c.http.do(ctx, http.MethodPost, uri, req, &resp); err != nil {
 		return errors.WithMessage(err, "post siga")
 	}
+
+	// Salvesta SiGa-st saadud konteineri ID.
 	s.containerID = resp.ContainerID
 
 	if err := c.storage.putStatus(ctx, session, s); err != nil {
@@ -153,6 +166,7 @@ func (c *client) CreateContainer(ctx context.Context, session string, datafiles 
 
 	// Do not store datafiles before the status is successfully written:
 	// otherwise we have no reference for cleaning them up later.
+	// Salvesta andmefailid.
 	for _, datafile := range datafiles {
 		key := dataKey(s.containerID, datafile.meta.Name)
 		if err := c.storage.putData(ctx, key, datafile.contents); err != nil {
