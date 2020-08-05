@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/e-gov/SiGa-Go/siga"
-	"github.com/e-gov/SiGa-Go/abi"
+	// "github.com/e-gov/SiGa-Go/abi"
 )
 
 // Example_MobileIDSigning demonstreerib m-ID-ga
@@ -51,7 +51,7 @@ func Example_MobileIDSigning() {
 	}
 	defer output.Close()
 
-	// when
+	// Koosta konteiner
 	if err = c.CreateContainer(ctx, session, datafile); err != nil {
 		fmt.Println("Example_MobileIDSigning: ", err)
 		os.Exit(1)
@@ -131,7 +131,7 @@ func CreateSIGAClient() siga.Client {
 	}
 
 	// Väljasta kontrolliks sisseloetud konf.
-	fmt.Println(abi.PrettyPrint(conf))
+	// fmt.Println(abi.PrettyPrint(conf))
 
 	// Moodusta HTTPS klient SiGa-ga suhtlemiseks.
 	c, err := siga.NewClient(conf)

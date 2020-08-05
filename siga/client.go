@@ -91,7 +91,7 @@ func NewClient(conf Conf) (Client, error) {
 	return c, nil
 }
 
-// newClientWithoutStorage moodustab HTTPS kliendi SiGa-ga suhtlemiseks.
+// newClientWithoutStorage on sisemine abif-n SiGa HTTPS kliendi moodustamiseks.
 func newClientWithoutStorage(conf Conf) (*client, error) {
 	c := &client{
 		profile:  conf.SignatureProfile,
@@ -111,15 +111,15 @@ func newClientWithoutStorage(conf Conf) (*client, error) {
 	return c, nil
 }
 
-// Close closes the Ignite client.
+// Close suleb (kustutab) SiGa HTTPS kliendi mälu (storage).
 func (c *client) Close() error {
 	return c.storage.close(context.Background())
 }
 
 // CreateContainer creates a new container in the SiGa service with metadata
 // about the datafiles and stores the returned container identifier and
-// contents of the datafiles in Ignite. It will attempt to close any existing
-// containers before this.
+// contents of the datafiles in SiGa client storage.
+// It will attempt to close any existing containers before this.
 func (c *client) CreateContainer(ctx context.Context, session string, datafiles ...*DataFile) error {
 	if err := c.closeContainer(ctx, session, false); err != nil {
 		// log.Error().WithError(err).Log(ctx, "close_old_container_error")
@@ -167,8 +167,8 @@ func (c *client) CreateContainer(ctx context.Context, session string, datafiles 
 
 // UploadContainer uploads an existing container to the SiGa service in
 // hashcode form and stores the returned container identifier and contents of
-// the datafiles in Ignite. It will attempt to close any existing containers
-// before this.
+// the datafiles in SiGa client storage.
+// It will attempt to close any existing containers before this.
 func (c *client) UploadContainer(ctx context.Context, session string, r io.Reader) error {
 	// Ensure input is valid before closing old container.
 	src, size, err := toReaderAt(r)
@@ -231,8 +231,9 @@ func (c *client) UploadContainer(ctx context.Context, session string, r io.Reade
 }
 
 // StartRemoteSigning initiates a remote signing session in the SiGa service
-// and stores the returned signature identifier in Ignite. It checks the data
-// to sign for validity and hashes it using the returned digest algorithm.
+// and stores the returned signature identifier SiGa client storage.
+// It checks the data to sign for validity and hashes it using the returned
+// digest algorithm.
 func (c *client) StartRemoteSigning(ctx context.Context, session string, cert []byte) (
 	hash []byte, algorithm string, err error) {
 
@@ -277,7 +278,7 @@ func (c *client) StartRemoteSigning(ctx context.Context, session string, cert []
 }
 
 // FinalizeRemoteSigning completes the signing operation in the SiGa service
-// using the signature identifier stored in Ignite.
+// using the signature identifier stored in SiGa client storage.
 func (c *client) FinalizeRemoteSigning(ctx context.Context, session string, signature []byte) error {
 	s, err := c.storage.getStatus(ctx, session, true)
 	if err != nil {
@@ -304,7 +305,7 @@ func (c *client) FinalizeRemoteSigning(ctx context.Context, session string, sign
 }
 
 // StartMobileIDSigning initiates a Mobile-ID signing session in the SiGa
-// service and stores the returned signature identifier in Ignite.
+// service and stores the returned signature identifier in SiGa client storage.
 func (c *client) StartMobileIDSigning(ctx context.Context, session, person, phone, message string) (
 	challenge string, err error) {
 
@@ -340,7 +341,8 @@ func (c *client) StartMobileIDSigning(ctx context.Context, session, person, phon
 }
 
 // RequestMobileIDSigningStatus requests the status of the signing operation
-// from the SiGa service using the signature identifier stored in Ignite.
+// from the SiGa service using the signature identifier stored in SiGa client
+// storage.
 //
 // If the signature is complete, then it returns true and a nil error. If the
 // transaction is still outstanding, then it returns false and a nil error. All
@@ -379,7 +381,7 @@ func (c *client) RequestMobileIDSigningStatus(ctx context.Context, session strin
 
 // WriteContainer requests the hashcode container from the SiGa service and
 // converts it to a complete container using the datafile contents stored in
-// Ignite.
+// SiGa client storage.
 func (c *client) WriteContainer(ctx context.Context, session string, w io.Writer) error {
 	s, err := c.storage.getStatus(ctx, session, true)
 	if err != nil {
@@ -410,11 +412,12 @@ func (c *client) WriteContainer(ctx context.Context, session string, w io.Writer
 }
 
 // CloseContainer deletes the container in the SiGa service and removes all
-// information about it from Ignite.
+// information about it from SiGa client storage.
 func (c *client) CloseContainer(ctx context.Context, session string) error {
 	return c.closeContainer(ctx, session, true)
 }
 
+// closeContainer on konteineri sulgemise (kustutamise) abif-n.
 func (c *client) closeContainer(ctx context.Context, session string, mandatory bool) error {
 	s, err := c.storage.getStatus(ctx, session, mandatory)
 	if err != nil {
@@ -439,6 +442,7 @@ func (c *client) closeContainer(ctx context.Context, session string, mandatory b
 	return errors.WithMessage(c.storage.removeStatus(ctx, session), "remove status")
 }
 
+// dataKey sidurdab konteineri ID ja failinime.
 func dataKey(containerID, filename string) string {
 	return containerID + ":" + filename
 }
