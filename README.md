@@ -1,32 +1,26 @@
 # SiGa-Go
-Riigi allkirjastamisteenuse Go-klient
 
-[Riigi allkirjastamisteenuse tehniline dok-n](https://open-eid.github.io/allkirjastamisteenus/)
+SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 
-`certs` - kaustas on Riigi allkirjastamisteenusega suhtlemisel kasutatavad serdid
-(ei laeta üles GitHub reposse)
+Riigi allkirjastamisteenus (lühidalt SiGa) võimaldab koostada nõuetekohase konteineri (ASiC-E vormingus), pöörduda m-ID allkirjastamisteenuse poole ja saada allkirja koosseisus nõutav ajatempel. Vt lähemalt SiGa [tehniline dokumentatsioon](https://open-eid.github.io/allkirjastamisteenus/).
 
-### Konteineri üleslaadimine
+## Kasutamine
 
-Mine kausta `SiGa-Go\siga` ja käivita testiprogramm `TestClient_UploadContainer_Succeeds`:
+1) Klooni repo masinasse. Masinas peab olema paigaldatud Go.
 
-`go test -v -run TestClient_UploadContainer_Succeeds`
+2) Koosta rakenduse seadistusfail `siga.json`.
 
-Testiprogramm laeb failist `testdata/mobile-id.asice` ASiC-E konteineri, teeb Riigi
-allkirjastamisteenusesse (demo) konteineri üleslaadimise päringu () ja prindib konsoolile
-päringu vastuses saadud konteineri ID.
+Seadistusfail peab asuma: `testdata/siga.json`. Seadistusfail sisaldab rakendusele SiGa-s antud konto andmeid. Seetõttu seadistusfail ei ole laetud üles avalikku reposse.
 
-Märkus. Fail `testdata/mobile-id.asice` ei ole avalikus repos.
+Rakendusele SiGa-s konto loomiseks tuleb esitada taotlus Riigi Infosüsteemi Ametile. Vt: [Elektrooniline identiteet eID > Partnerile](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html).
 
-Päringu saatmiseks moodustab testiprogramm HTTPS kliendi, kasutades failis
-`testdata/siga.json` olevaid seadistusväärtusi. Faili `testdata/siga.json` ei ole
-avalikus repos. Faili struktuur on järgmine:
+Seadistusfaili struktuur on järgmine:
 
 ````
 {
   "url": "https://dsig-demo.eesti.ee/",
-  "serviceIdentifier": "<Riigi allkirjastamisteenust kasutava teenuse ID>",
-  "serviceKey": "<salasõna>",
+  "serviceIdentifier": "<rakendusele SiGa-s antud ID>",
+  "serviceKey": "<rakendusele SiGa-s antud salasõna>",
   "clientTLS": {
     "chain": "-----BEGIN CERTIFICATE-----\nMII...",
     "key": "-----BEGIN RSA PRIVATE KEY-----\nMII.."
@@ -36,4 +30,13 @@ avalikus repos. Faili struktuur on järgmine:
   ]
 }
 ````
+
+`clientTLS.chain` ja `clientTLS.key` on rakenduse poolt SiGa poole pöördumisel kasutatav sert (või serdiahel) ja privaatvõti. SiGa demo ei kontrolli TLS-kliendi serti. Seetõttu võib olla isetehtud, vabalt valitud `Subject`-väärtusega sert.
+
+`rootCAs` on SiGa serveri sert.
+
+Näidisrakenduse töö käigus koostatakse allkirjastatud faile. Need on ASiC-E formaadis, failitüübiga `asice` ja asuvad kaustas `siga/testdata`. Allkirjastatud failide uurimiseks saab kasutada ID-kaardi haldusvahendit (DigiDoc4 klienti).
+
+
+
 
