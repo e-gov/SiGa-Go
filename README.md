@@ -4,6 +4,8 @@ SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 
 Riigi allkirjastamisteenus (lühidalt SiGa) võimaldab koostada nõuetekohase konteineri (ASiC-E vormingus), pöörduda m-ID allkirjastamisteenuse poole ja saada allkirja koosseisus nõutav ajatempel. Vt lähemalt SiGa [tehniline dokumentatsioon](https://open-eid.github.io/allkirjastamisteenus/).
 
+Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`).
+
 ## Kasutamine
 
 1) Klooni repo masinasse. Masinas peab olema paigaldatud Go.
@@ -50,6 +52,16 @@ Seadistusfaili struktuur on järgmine:
 Näidisrakenduse töö käigus koostatakse allkirjastatud faile. Need on ASiC-E formaadis, failitüübiga `asice` ja asuvad kaustas `testdata`. Allkirjastatud failide uurimiseks saab kasutada ID-kaardi haldusvahendit (DigiDoc4 klienti).
 
 ## Detailne kirjeldus
+
+Tarkvara mõistmiseks olulisi mõisteid:
+- rakenduse ja SiGa teenuse vahel luuakse seanss. Seansi identifikaatorit nimetatakse
+koodis `session`.
+- seansi oleku hoidmiseks kasutatakse seansimälu (`storage`). Igale aktiivsele
+seansile vastab seansimälus seansiolekukirje (tüüp `status`).
+-  Rakendus ei ole 
+paigaldatav kõrgkäideldavana s.t klastrina. Seansimäluks kasutatakse rakenduse mälus
+hoitavat lihtsat struktuuri. Kuid kood on struktureeritud nii, et vajadusel saab
+kasutada ka Ignite hajusmälu (ei ole käesolevas repos avaldatud).
 
 Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine (
 `Example_MobileIDSigning()`). `Example_MobileIDSigning`:

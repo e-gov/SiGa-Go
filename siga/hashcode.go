@@ -109,7 +109,11 @@ func toHashcode(dst io.Writer, src io.ReaderAt, size int64) ([]*DataFile, error)
 // a complete signature container and writes it to dst. size indicates the size
 // of src in bytes. The data files signed in the hashcode form container must
 // match exactly datafiles.
-func fromHashcode(dst io.Writer, src io.ReaderAt, size int64, datafiles ...*DataFile) error {
+func fromHashcode(
+	dst io.Writer,
+	src io.ReaderAt,
+	size int64,
+	datafiles ...*DataFile) error {
 	reader, err := zip.NewReader(src, size)
 	if err != nil {
 		return errors.Wrap(err, "open zip")

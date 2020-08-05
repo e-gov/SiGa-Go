@@ -320,14 +320,19 @@ func (c *client) FinalizeRemoteSigning(ctx context.Context, session string, sign
 
 // StartMobileIDSigning initiates a Mobile-ID signing session in the SiGa
 // service and stores the returned signature identifier in SiGa client storage.
-func (c *client) StartMobileIDSigning(ctx context.Context, session, person, phone, message string) (
+func (c *client) StartMobileIDSigning(
+	ctx context.Context,
+	session,
+	person, phone, message string) (
 	challenge string, err error) {
 
+	// Võta mälust seansi olekukirje. 
 	s, err := c.storage.getStatus(ctx, session, true)
 	if err != nil {
 		return "", errors.WithMessage(err, "get status")
 	}
 
+	// Valmista ette päring SiGa poole.
 	uri := "/hashcodecontainers/" + url.PathEscape(s.containerID) + "/mobileidsigning"
 	req := map[string]string{
 		"personIdentifier": person,
@@ -338,14 +343,17 @@ func (c *client) StartMobileIDSigning(ctx context.Context, session, person, phon
 	if message != "" {
 		req["messageToDisplay"] = message
 	}
+	// Valmista ette vastuse struktuur.
 	var resp struct {
 		ChallengeID string `json:"challengeId"`
 		SignatureID string `json:"generatedSignatureId"`
 	}
+	// Täida päring.
 	if err := c.http.do(ctx, http.MethodPost, uri, req, &resp); err != nil {
 		return "", errors.WithMessage(err, "post siga")
 	}
 
+	// Salvesta vastusega saadud allkirja ID seansi olekustruktuuri.
 	s.signatureID = resp.SignatureID
 	if err := c.storage.putStatus(ctx, session, *s); err != nil {
 		return "", errors.WithMessage(err, "put status")
@@ -396,21 +404,32 @@ func (c *client) RequestMobileIDSigningStatus(ctx context.Context, session strin
 // WriteContainer requests the hashcode container from the SiGa service and
 // converts it to a complete container using the datafile contents stored in
 // SiGa client storage.
-func (c *client) WriteContainer(ctx context.Context, session string, w io.Writer) error {
+// - session - allkirjastamisseansi ID
+func (c *client) WriteContainer(
+	ctx context.Context,
+	session string,
+	w io.Writer) error {
+
+	// Leia seansimälust seansiolekukirje.
 	s, err := c.storage.getStatus(ctx, session, true)
 	if err != nil {
 		return errors.WithMessage(err, "get status")
 	}
 
+	// Valmista ette konteineri SiGa-st allalaadimise päring.
 	uri := "/hashcodecontainers/" + url.PathEscape(s.containerID)
+	// Valmista ette vastuse struktuur.
 	var resp struct {
 		Container []byte `json:"container"`
 	}
+	// Täida konteineri allalaadimise päring.
 	if err := c.http.do(ctx, http.MethodGet, uri, nil, &resp); err != nil {
 		return errors.WithMessage(err, "get siga")
 	}
+	// Eralda vastusest räsikujul konteiner.
 	hashcode := bytes.NewReader(resp.Container)
 
+	// Võta seansiolekukirjest andmefailid, kogu need massiivi datafiles.
 	datafiles := make([]*DataFile, 0, len(s.filenames))
 	for _, filename := range s.filenames {
 		data, err := c.storage.getData(ctx, dataKey(s.containerID, filename))
@@ -420,6 +439,8 @@ func (c *client) WriteContainer(ctx context.Context, session string, w io.Writer
 		datafiles = append(datafiles, bytesDataFile(filename, data))
 	}
 
+	// Salvesta andmefailid räsikujul konteinerisse (hashcode), moodustades sellega
+	// täieliku allkirjakonteineri.
 	return errors.WithMessage(
 		fromHashcode(w, hashcode, hashcode.Size(), datafiles...),
 		"from hashcode")
@@ -433,19 +454,23 @@ func (c *client) CloseContainer(ctx context.Context, session string) error {
 
 // closeContainer on konteineri sulgemise (kustutamise) abif-n.
 func (c *client) closeContainer(ctx context.Context, session string, mandatory bool) error {
+	// Leia seansiolekukirje.
 	s, err := c.storage.getStatus(ctx, session, mandatory)
 	if err != nil {
 		return errors.WithMessage(err, "get status")
 	}
+	// Kui kirjet ei ole, siis ei ole midagi kustutada.
 	if s == nil {
 		return nil
 	}
 
+	// Saada konteineri kustutamise päring SiGa-sse.
 	uri := "/hashcodecontainers/" + url.PathEscape(s.containerID)
 	if err := c.http.do(ctx, http.MethodDelete, uri, nil, nil); err != nil {
 		return errors.WithMessage(err, "delete siga")
 	}
 
+	// Kustuta seansimälust andmefailid.
 	for _, filename := range s.filenames {
 		key := dataKey(s.containerID, filename)
 		if err := c.storage.removeData(ctx, key); err != nil {
@@ -453,10 +478,11 @@ func (c *client) closeContainer(ctx context.Context, session string, mandatory b
 		}
 	}
 
+	// Lõpuks kustuta seansiolekukirje.
 	return errors.WithMessage(c.storage.removeStatus(ctx, session), "remove status")
 }
 
-// dataKey sidurdab konteineri ID ja failinime.
+// dataKey on abif-n, mis sidurdab konteineri ID ja failinime.
 func dataKey(containerID, filename string) string {
 	return containerID + ":" + filename
 }

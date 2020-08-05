@@ -28,22 +28,26 @@ import (
 // testdata/mobile-id.asice
 // 8) suleb HTTPS kliendi (Close).
 func Example_MobileIDSigning() {
-	// given
+	// Loo SiGa klient.
 	c := CreateSIGAClient()
 	defer c.Close()
 
+	// Loo seanss.
 	ctx := context.Background()
 	const session = "TestClient_MobileIDSigning_Succeeds"
+	// Loe sisse andmefail.
 	datafile, err := siga.ReadDataFile("testdata/example_datafile.txt")
 	if err != nil {
 		fmt.Println("Example_MobileIDSigning: ", err)
 		os.Exit(1)
 	}
 
+	// Määra allkirjastaja isikutunnused.
 	const person = "60001019906"
 	const phone = "+37200000766"
 	const message = "Automated testing"
 
+	// Alusta väljundfail (allkirjastatud fail).
 	output, err := os.Create("testdata/mobile-id.asice")
 	if err != nil {
 		fmt.Println("Example_MobileIDSigning: ", err)
@@ -51,21 +55,25 @@ func Example_MobileIDSigning() {
 	}
 	defer output.Close()
 
-	// Koosta konteiner
+	// Koosta konteiner, pöördumisega SiGa poole.
 	if err = c.CreateContainer(ctx, session, datafile); err != nil {
 		fmt.Println("Example_MobileIDSigning: ", err)
 		os.Exit(1)
 	}
-	defer c.CloseContainer(ctx, session) // Attempt to clean-up SiGa regardless.
+	// Ajata konteineri sulgemine.
+	defer c.CloseContainer(ctx, session)
 
+	// Alusta m-ID allkirjastamissuhtlust SiGa-ga (alustuspäringu saatmine).
 	if _, err = c.StartMobileIDSigning(ctx, session, person, phone, message); err != nil {
 		fmt.Println("Example_MobileIDSigning: ", err)
 		os.Exit(1)
 	}
 
+	// Olekupäringute ajaintervall (5 s).
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 	for range ticker.C {
+		// Tee m-ID allkirjastamise olekupäring.
 		done, err := c.RequestMobileIDSigningStatus(ctx, session)
 		if err != nil {
 			fmt.Println("Example_MobileIDSigning: ", err)
@@ -76,6 +84,7 @@ func Example_MobileIDSigning() {
 		}
 	}
 
+	// Päri allkirja sisaldav konteiner SiGa-st ja lisa sinna andmefailid.
 	if err = c.WriteContainer(ctx, session, output); err != nil {
 		fmt.Println("Example_MobileIDSigning: ", err)
 		os.Exit(1)
