@@ -1,6 +1,6 @@
 SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 
-Riigi allkirjastamisteenus (lühidalt SiGa) võimaldab koostada nõuetekohase allkirjakonteineri (ASiC-E vormingus), vahendada m-ID allkirjastamisteenust ja ajatempliteenust.
+Riigi allkirjastamisteenus (lühidalt SiGa) ei kata kogu allkirjastamisprotsessi, kuid pakub nõuetekohase allkirjakonteineri (ASiC-E vormingus) koostamise teenust, samuti vahendab m-ID allkirjastamisteenust ja ajatempliteenust.
 
 Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`), ühe kasutaja poolt, lokaalses masinas. 
 
@@ -18,6 +18,8 @@ Näidisrakenduse kasutamiseks on vaja:
 - ID-kaardilugejat ja kehtivat ID-kaarti
 - arvutisse paigaldatud ID-kaardi baastarkvara
 - arvutisse paigaldatud Go.
+- rakenduse kontot SiGa-s. Rakendusele SiGa-s konto loomiseks tuleb esitada taotlus Riigi Infosüsteemi Ametile. Vt: [Elektrooniline identiteet eID > Partnerile](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html).
+
 
 ## Kasutamine
 
@@ -54,8 +56,6 @@ Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
 ## Seadistusfail
 
 Seadistusfail peab asuma: `testdata/siga.json`. Seadistusfail sisaldab rakendusele SiGa-s antud konto andmeid. Seetõttu seadistusfail ei ole laetud üles avalikku reposse.
-
-Rakendusele SiGa-s konto loomiseks tuleb esitada taotlus Riigi Infosüsteemi Ametile. Vt: [Elektrooniline identiteet eID > Partnerile](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html).
 
 Seadistusfaili struktuur on järgmine:
 
