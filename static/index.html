@@ -21,6 +21,7 @@
     <script src="hwcrypto/hwcrypto-legacy.js"></script>
     <script src="hwcrypto/hwcrypto.js"></script>
     <script src="hwcrypto/hex2base.js"></script>
+    <script src="hwcrypto/base64js.min.js"></script>
 
     <!-- Stiilid -->
     <link rel='stylesheet' href='siga-go.css'>
@@ -39,19 +40,22 @@
     <div id='Tekstisisestusala' contenteditable='true' spellcheck='false'>
     </div>
 
-    <!-- Nuppude ala -->
-    <p id='Tekstitootlus'>
-      <span id='Allkirjastanupp' class='nupp' title='Allkirjasta'>
-        <i class="ikoon material-icons green">verified</i>
-      </span>
+    <p>m-ID testkeskkonnas fikseeritud väärtused:<br>
+      Isikukood: 60001019906, Mobiilinumber: +37200000766</p>
 
-      <span id='Koodnupp' class='nupp' title='Lähtekood'>
-        <i class="ikoon material-icons">code</i>
-      </span>
-    </p>
+    <!-- Nuppude ala -->
+    <div id='Nuppudeala'>
+      <div id='IDkaartNupp' class='tekstinupp'>
+        Allkirjasta ID-kaardiga
+      </div>
+
+      <div id='mIDNupp' class='tekstinupp'>
+        Allkirjasta m-ID-ga
+      </div>
+    </div>
 
     <!-- Teatepaan -->
-    <div id='Teatepaan' class='paan teabepaan flex'
+    <div id='Teatepaan' class='paan teabepaan flex peidetud'
       style=' align-items:start; justify-content: space-between;'>
       <p id='Teatetekst' class='aarisega'></p>
       <!-- Sulgemisnupp -->

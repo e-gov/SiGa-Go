@@ -42,18 +42,35 @@ color: darkslategrey;
 border: 1px solid rgba(0, 0, 0, 0.15);
 border-radius: 4px;
 }
-.green { color: green; }
-.tomato { color: Tomato; }  
+
+.green {
+  border: 1px solid green;
+  background-color: powderblue;
+}
+.tomato {
+  border: 1px solid Tomato;
+  background-color: mistyrose;
+}  
+
 .ikoon { font-family: 'Material Icons';
 font-size: 48px;
 }
 
-/* Tekstitöötluse nupud */
-#Tekstitootlus {
-display: flex;
-align-items: center;
-justify-content: center;
-margin-top: 1rem;
+/* Nuppude ala */
+#Nuppudeala {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.tekstinupp {
+  margin: 1.5rem 1rem;
+  border-radius:15px;
+  border: solid 1px darkslategray;
+  color: darkslategray;
+  padding: 10px; width: 12rem; text-align: center;
+  cursor: pointer;
 }
 
 /* Paanid */
@@ -80,16 +97,7 @@ font-weight: bold;
 color: Gray;
 }
 
-/* Salvestuspaan */
-#St {
-line-height: 1.0 !important;
-}
-
 /* Teave */
-.teabepaan {
-border: 1px solid darkgray;
-background-color: honeydew;
-}
 .aarisega {
 margin: 0.8rem;
 }
@@ -111,16 +119,3 @@ text-decoration: underline;
 text-decoration-style: dashed;
 }
 
-/* Täheloendur */
-.Loendur {
-color: darkgray;
-padding: 2px;
-font-family: 'Courier New', monospace;
-font-size: 12pt;
-}
-.klahv {
-border-radius: 3px;
-padding-left: 1px; padding-right: 1px;
-border: 1px solid darkslategray;
-font-family: 'Courier New', monospace;
-}

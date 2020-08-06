@@ -251,7 +251,10 @@ func (c *client) UploadContainer(ctx context.Context, session string, r io.Reade
 // and stores the returned signature identifier SiGa client storage.
 // It checks the data to sign for validity and hashes it using the returned
 // digest algorithm.
-func (c *client) StartRemoteSigning(ctx context.Context, session string, cert []byte) (
+func (c *client) StartRemoteSigning(
+	ctx context.Context,
+	session string,
+	cert []byte) (
 	hash []byte, algorithm string, err error) {
 
 	s, err := c.storage.getStatus(ctx, session, true)
@@ -296,7 +299,10 @@ func (c *client) StartRemoteSigning(ctx context.Context, session string, cert []
 
 // FinalizeRemoteSigning completes the signing operation in the SiGa service
 // using the signature identifier stored in SiGa client storage.
-func (c *client) FinalizeRemoteSigning(ctx context.Context, session string, signature []byte) error {
+func (c *client) FinalizeRemoteSigning(
+	ctx context.Context,
+	session string,
+	signature []byte) error {
 	s, err := c.storage.getStatus(ctx, session, true)
 	if err != nil {
 		return errors.WithMessage(err, "get status")
