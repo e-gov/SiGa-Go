@@ -29,22 +29,71 @@ function seaTeabepaanideKasitlejad() {
 function seaTekstinupukasitlejad() {
 
   $('#Allkirjastanupp').click(() => {
-    fetch('https://localhost:8080/p1', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        tekst: document.getElementById("Tekstisisestusala").innerText
-      })
-    })
-      .then(response => {
-        console.log(response)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+
+    // HwCrypto töökorras oleku kontroll.
+    if (!window.hwcrypto.use('auto')) {
+      console.error("loeSert: hwcrypto BE valik ebaõnnestus.");
+    }
+  
+    window.hwcrypto.debug()
+      .then(
+        (response) => {
+          console.log("loeSert: Debug: " + response);
+          // Asünk läheb siin katki? Kuid kasutaja on aeglane..
+        },
+        (err) => {
+          console.log("loeSert: debug() failed: " + err);
+          return;
+        });
+  
+    var options = { lang: 'et' };
+    // filter: 'AUTH' valik salgamatuseta serdid
+  
+    // Päri sert ja saada see koos allkirjastatava tekstiga serveripoolele.
+    window.hwcrypto.getCertificate(options)
+      .then(
+        function (response) {
+          var certPEM = hexToPem(response.hex);
+          // var certDER = response.encoded;
+          console.log("loeSert: Sert loetud:\n");
+          ///////////////////////
+          document.getElementById("Teatetekst").innerText = certPEM;
+
+          // Saada allkirjastatav tekst ja sert serveripoolele.
+          fetch('https://localhost:8080/p1', {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              tekst: document.getElementById("Tekstisisestusala").innerText,
+              sert: certPEM 
+            })
+          })
+            .then(response => {
+              // TODO: Lisada vastuse töötlemine
+              console.log("loeSert: Vastus: ", response)
+            })
+            .catch(err => {
+              console.log("loeSert: Viga P1 saatmisel: ", err)
+            })
+            ///////////////////////
+        },
+        function (err) {
+          console.error("loeSert: Serdi lugemine ebaõnnestus. ",
+            "Kontrolli, kas ID-kaart on lugejas. : "
+            + err);
+          document.getElementById("Teatetekst").innerText =
+          "Serdita ei saa allkirjastada"
+          return;
+        }
+      );
   });
+}
+
+// loeSert küsib kasutajalt allkirjastamisserdi valimist. Tagastab serdi
+// või null. NB! Asünkroonne.
+function loeSert() {
 }
 
 // kuvaTeade kuvab teate.

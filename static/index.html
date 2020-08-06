@@ -13,6 +13,15 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" 
       rel="stylesheet">
 
+      <!-- Including CryptoJS required libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/hmac-sha256.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/enc-base64-min.js"></script>
+
+    <!-- hwcrypto ja seonduv vajalik -->
+    <script src="hwcrypto/hwcrypto-legacy.js"></script>
+    <script src="hwcrypto/hwcrypto.js"></script>
+    <script src="hwcrypto/hex2base.js"></script>
+
     <!-- Stiilid -->
     <link rel='stylesheet' href='siga-go.css'>
 
@@ -24,16 +33,6 @@
 
     <h1>SiGa-Go</h1>
     <p>Riigi allkirjastamisteenuse Go-klient (näiterakendus)</p>
-
-    <!-- Teatepaan -->
-    <div id='Teatepaan' class='paan teabepaan peidetud flex'
-      style=' align-items:start; justify-content: space-between;'>
-      <p id='Teatetekst' class='aarisega'></p>
-      <!-- Sulgemisnupp -->
-      <div id='TeatepaanSulge' class='sulgemisnupuke'>
-        <span>&times;</span>
-      </div>
-    </div>
 
     <p>Sisesta allkirjastatav tekst:</p>
     <!-- Tekstisisestusala -->
@@ -50,6 +49,16 @@
         <i class="ikoon material-icons">code</i>
       </span>
     </p>
+
+    <!-- Teatepaan -->
+    <div id='Teatepaan' class='paan teabepaan flex'
+      style=' align-items:start; justify-content: space-between;'>
+      <p id='Teatetekst' class='aarisega'></p>
+      <!-- Sulgemisnupp -->
+      <div id='TeatepaanSulge' class='sulgemisnupuke'>
+        <span>&times;</span>
+      </div>
+    </div>
 
   </body>
 

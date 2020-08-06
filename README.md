@@ -6,6 +6,13 @@ Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.
 
 ![kuvatõmmis](docs/FE-kuva-01.png)
 
+## Eeldused
+
+Näidisrakenduse kasutamiseks on vaja:
+- ID-kaardilugejat ja kehtivat ID-kaarti
+- arvutisse paigaldatud ID-kaardi baastarkvara
+- arvutisse paigaldatud Go.
+
 ## Kasutamine
 
 Järgnevad juhised on rakenduse evitamiseks lokaalses masinas (`localhost`).

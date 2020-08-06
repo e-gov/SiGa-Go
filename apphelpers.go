@@ -60,7 +60,6 @@ func CreateServer() {
 	// Moodusta server
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 	http.HandleFunc("/p1", p1Handler)
-	http.HandleFunc("/abi", handler)
 	log.Fatal(http.ListenAndServeTLS(
 		":8080",
 		"certs/localhostchain.cert",
@@ -68,33 +67,37 @@ func CreateServer() {
 		nil))
 }
 
-// p1Handler võtab vastu sirvikust saadetud allkirjastatava teksti ja 
-// moodustab (SiGa poole pöördumisega) konteineri. 
+// p1Handler võtab vastu sirvikust saadetud allkirjastatava teksti ja serdi
+// ning moodustab (SiGa poole pöördumisega) konteineri. 
 func p1Handler(w http.ResponseWriter, req *http.Request) {
 
 	// Vastuvõetava päringu keha struktuur.
 	type req_struct struct {
 		Tekst string
+		Sert string
 	}
+
+	fmt.Println("Alustan P1 töötlemist")
 
 	// Loe päringu keha sisse.
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		panic(err)
+		log.Fatal("p1Handler: Päringu keha lugemine ebaõnnestus: ", err)
 	}
-	log.Println("P1 päringu keha: ", string(body))
+	// log.Println("p1Handler: Päringu keha: ", string(body))
 
 	// Parsi JSON.
 	var t req_struct
 	err = json.Unmarshal(body, &t)
 	if err != nil {
-		panic(err)
+		log.Fatal("p1Handler: Päringu keha parsimine ebaõnnestus: ", err)
 	}
-	log.Println(t.Tekst)
+	log.Println("p1Handler: Allkirjastatav tekst: ", t.Tekst)
+	log.Println("p1Handler: Sert: ", t.Sert)
 
 	// Tühi tekst?
 	if len(t.Tekst) == 0 {
-		fmt.Println("Tühja teksti ei saa allkirjastada")
+		log.Println("p1Handler: Tühja teksti ei saa allkirjastada")
 		return
 	}
 
@@ -120,10 +123,6 @@ func p1Handler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	fmt.Println("Päring töödeldud")
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
 }
 
 // CreateSIGAClient moodustab HTTPS kliendi SiGa poole pöördumiseks.
