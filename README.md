@@ -177,7 +177,10 @@ Näiteallkirjastamisel kasutatakse m-ID allkirjastamise testteenust.
 
 Voog ei sisalda (praegu) allkirjastamise õnnestumise kinnituse pärimist (`GET` `/hashcodecontainers/{containerId}/validationreport`).
 
- 
+## Analüüs
+
+Skriptiga `väljakutsegraaf.sh` saab genereerida paki `siga` väljakutsegraafi.
+
 
 
 
