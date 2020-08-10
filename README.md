@@ -179,7 +179,8 @@ Voog ei sisalda (praegu) allkirjastamise õnnestumise kinnituse pärimist (`GET`
 
 ## Analüüs
 
-Skriptiga `väljakutsegraaf.sh` saab genereerida paki `siga` väljakutsegraafi.
+Kaustas `analüüs` on paar eksperimentaalset koodistruktuuri uurimise vahendit.
+
 
 
 
