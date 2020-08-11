@@ -34,9 +34,15 @@ function seaNupukasitlejad() {
 
   $('#IDkaartNupp').click(() => {
 
+    // Tühja teksti ei saa allkirjastada.
+    if (document.getElementById("Tekstisisestusala").innerText.length == 0) {
+      kuvaTeade("Tühja teksti ei saa allkirjastada.", true);
+      return
+    } 
+
     // HwCrypto töökorras oleku kontroll.
     if (!window.hwcrypto.use('auto')) {
-      console.error("ID-kaardiga: hwcrypto BE valik ebaõnnestus.");
+      kuvaTeade("Tehniline tõrge: hwcrypto BE valik ebaõnnestus.", true);
     }
    
     var options = { lang: 'et' };
@@ -51,7 +57,7 @@ function seaNupukasitlejad() {
           console.log("ID-kaardiga: Sert loetud:\n");
           certToUse = certificate;
           ///////////////////////
-          kuvaTeade(certPEM, false);
+          kuvaTeade('Loetud sert:\n' + certPEM.substr(0, 40) + '...', false);
 
           // Saada allkirjastatav tekst ja sert serveripoolele.
           fetch('https://localhost:8080/p1', {
@@ -70,6 +76,7 @@ function seaNupukasitlejad() {
               response.json() 
               .then(data => { 
                 console.log("Vastuse keha: ", data);
+                // IDkaardiga2 teeb allkirjastamise teise osa: PIN2 küsimine jne.
                 IDkaardiga2(data.hash, data.algo)
               })
             })
@@ -114,6 +121,10 @@ function seaNupukasitlejad() {
         console.log("m-ID-ga: Viga P1 saatmisel: ", err)
         kuvaTeade("Päring ebaõnnestus", true)
       })
+
+  });
+
+  $('#laeAllaNupp').click(() => {
 
   });
 }
@@ -163,6 +174,7 @@ function saadaAllkiri(signatureValue) {
           kuvaTeade(data.error, true);
         } else {
           kuvaTeade("Allkiri edukalt antud", false);
+          $('#laeAllaNupp').removeClass('disabled');
         }
       })
     })

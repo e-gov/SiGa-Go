@@ -15,11 +15,11 @@ Rakenduse sirvikupooles kasutatud ID-kaardilugejaga suhtlemise teegi kohta vt: [
 ## Eeldused
 
 Näidisrakenduse kasutamiseks on vaja:
-- ID-kaardilugejat ja kehtivat ID-kaarti
+- ID-kaardilugejat
+- ID-kaarti. Kasutada saab ka reaalse isiku ID-kaarti, kuid siis ei ole võimalik allkirjastamist lõpuni teha - allkirjastamisteenuses tehtav kehtivuskinnituspäring (OSCP) ebaõnnestub, selle kohta antakse veateade. Kasutada saab ID-testkaarti. ID-testkaardi kasutamine on sarnane ID-testkaardi kasutamisega Riigi autentimisteenuse demokeskkonnas, vt [ID-kaart ja Mobiil-ID](https://e-gov.github.io/TARA-Doku/Testimine#id-kaart-ja-mobiil-id). 
 - arvutisse paigaldatud ID-kaardi baastarkvara
 - arvutisse paigaldatud Go.
 - rakenduse kontot SiGa-s. Rakendusele SiGa-s konto loomiseks tuleb esitada taotlus Riigi Infosüsteemi Ametile. Vt: [Elektrooniline identiteet eID > Partnerile](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html).
-
 
 ## Kasutamine
 
@@ -27,9 +27,9 @@ Järgnevad juhised on rakenduse evitamiseks lokaalses masinas (`localhost`).
 
 1) Klooni repo masinasse. Masinas peab olema paigaldatud Go.
 
-2) Koosta rakenduse seadistusfail `siga.json`. Vt lähemalt allpool "Seadistusfail".
+2) Valmista rakendusele serdid. Rakendus nõuab serti (täpsemini, serdiahelat) failis `certs/localhostchain.cert` ja privaatvõtit failis `certs/localhost.key`.
 
-3) Valmista rakendusele serdid. Rakendus nõuab serti (täpsemini, serdiahelat) failis `certs/localhostchain.cert` ja privaatvõtit failis `certs/localhost.key`.
+3) Koosta rakenduse seadistusfailid `certs/siga.json` ja `certs/app.json`. Vt lähemalt jaotises "Seadistamine".
 
 4) Paigalda veebisirvijasse CA sert. Chrome puhul sisesta aadressireale `chrome://settings/privacy`, vajuta jaotises `Privacy and Security` `more`-nupule, vali `Manage Certificates`, `Trusted Root Authorities`, `Import`. 
 
@@ -53,24 +53,30 @@ Rakendus annab ka veadiagnostikat, nt:
 
 Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
 
-## Seadistusfail
+## Seadistamine
 
-Seadistusfail peab asuma: `testdata/siga.json`. Seadistusfail sisaldab rakendusele SiGa-s antud konto andmeid. Seetõttu seadistusfail ei ole laetud üles avalikku reposse.
+SiGa-Go seadistatakse seadistusfailiga. Seadistusfaili asukoht ja nimi antakse rakenduse käivitamisel lipuga `conf`:
+
+`go run . -conf certs/app.json`
+
+Vaikimisi nimi on `certs/app.json`.
 
 Seadistusfaili struktuur on järgmine:
 
 ````
 {
-  "url": "https://dsig-demo.eesti.ee/",
-  "serviceIdentifier": "<rakendusele SiGa-s antud ID>",
-  "serviceKey": "<rakendusele SiGa-s antud salasõna>",
-  "clientTLS": {
-    "chain": "-----BEGIN CERTIFICATE-----\nMII...",
-    "key": "-----BEGIN RSA PRIVATE KEY-----\nMII.."
-},
-  "rootCAs": [
-    "-----BEGIN CERTIFICATE-----\nMII.."
-  ]
+  "sigaClient": {
+    "url": "https://dsig-demo.eesti.ee/",
+    "serviceIdentifier": "<rakenduse ID>",
+    "serviceKey": "<rakenduse salasõna>",
+    "clientTLS": {
+      "chain": "-----BEGIN CERTIFICATE...",
+      "key": "-----BEGIN RSA PRIVATE KEY..."
+    },
+    "rootCAs": [
+      "-----BEGIN CERTIFICATE..."
+    ]
+  }
 }
 ````
 
