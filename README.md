@@ -1,10 +1,11 @@
 SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 
-Riigi allkirjastamisteenus (lühidalt SiGa) ei kata kogu allkirjastamisprotsessi, kuid on abiks nõuetekohase allkirjakonteineri (ASiC-E vormingus) koostamisel ja vahendab m-ID allkirjastamisteenust, kehtivuskinnitus- (OSCP) ja ajatempliteenust.
+Riigi allkirjastamisteenus (lühidalt SiGa) ei kata kogu allkirjastamisprotsessi,
+kuid on abiks nõuetekohase allkirjakonteineri (ASiC-E vormingus) koostamisel ja vahendab m-ID allkirjastamisteenust, kehtivuskinnitus- (OSCP) ning ajatempliteenust.
 
 Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`), ühe kasutaja poolt, lokaalses masinas. Rakendus ei ole otseselt kasutatav toodangu
-veebirakenduses (sest puudub kasutaja veebiseansihaldus). Praegu ei ole teostatud
-ka allkirjastatud faili allalaadimine kasutaja sirvikust. Allkirjastatud fail 
+veebirakenduses, eelkõige seetõttu, et puudub kasutaja veebiseansihaldus. Praegu ei ole teostatud
+ka allkirjastatud faili allalaadimine kasutaja sirvikust. Allkirjastatud failid 
 salvestatakse rakenduse serveripoolel kettale.
 
 ![kuvatõmmis](docs/FE-kuva-01.png)
@@ -32,7 +33,7 @@ Rakenduse sirvikupooles kasutatud ID-kaardilugejaga suhtlemise teegi kohta vt: [
 
 Näidisrakenduse kasutamiseks on vaja:
 - ID-kaardilugejat
-- ID-kaarti. Kasutada saab ka reaalse isiku ID-kaarti, kuid siis ei ole võimalik allkirjastamist lõpuni teha - allkirjastamisteenuses tehtav kehtivuskinnituspäring (OSCP) ebaõnnestub, selle kohta antakse veateade. Kasutada saab ID-testkaarti. ID-testkaardi kasutamine on sarnane ID-testkaardi kasutamisega Riigi autentimisteenuse demokeskkonnas, vt [ID-kaart ja Mobiil-ID](https://e-gov.github.io/TARA-Doku/Testimine#id-kaart-ja-mobiil-id). 
+- ID-kaarti. Kasutada saab ka reaalse isiku ID-kaarti, kuid siis ei ole võimalik allkirjastamist lõpuni teha - allkirjastamisteenuses tehtav kehtivuskinnituspäring (OSCP) ebaõnnestub, selle kohta antakse veateade. Kasutada saab ID-testkaarti. ID-testkaardi kasutamine on sarnane ID-testkaardi kasutamisega Riigi autentimisteenuse demokeskkonnas, vt [ID-kaart ja Mobiil-ID](https://e-gov.github.io/TARA-Doku/Testimine#id-kaart-ja-mobiil-id). Vt ka [ID-kaart > Arendajale > Testimine](https://www.id.ee/rubriik/testimine-id-kaart-arendajale/).
 - arvutisse paigaldatud ID-kaardi baastarkvara
 - arvutisse paigaldatud Go.
 - rakenduse kontot SiGa-s. Rakendusele SiGa-s konto loomiseks tuleb esitada taotlus Riigi Infosüsteemi Ametile. Vt: [Elektrooniline identiteet eID > Partnerile](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html).
@@ -85,7 +86,7 @@ Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
 
 SiGa-Go seadistatakse seadistusfailiga. Seadistusfaili asukoht ja nimi antakse rakenduse käivitamisel lipuga `conf`:
 
-`go run . -conf siga-conf-PParmakson/.json`
+`go run . -conf certs/siga-conf.json`
 
 Vaikimisi failinimi on `certs/siga-conf-PParmakson.json`.
 
