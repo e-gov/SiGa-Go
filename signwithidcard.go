@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/e-gov/SiGa-Go/siga"
@@ -141,7 +142,30 @@ func p2Handler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	log.Println("p2Handler: FinalizeRemoteSigning: edukas")
+
 	// TODO: Lae räsikonteiner SiGa-st alla
+	// Ava fail kirjutamiseks.
+	f, err := os.Create("testdata/proov.asice")
+	defer f.Close(f)
+	if err != nil {
+		log.Println("p2Handler: Faili ei saa avada: ", err)
+		// Saada veateade sirvikupoolele
+		resp.Error = err.Error()
+		json.NewEncoder(w).Encode(resp)
+		log.Println("p2Handler: Päringu vastus saadetud sirvikusse")
+		return
+	}
+
+	err = sigaClient.WriteContainer(ctx, isession, f)
+	if err != nil {
+		log.Println("p2Handler: WriteContainer: ", err)
+		// Saada veateade sirvikupoolele
+		resp.Error = err.Error()
+		json.NewEncoder(w).Encode(resp)
+		log.Println("p2Handler: Päringu vastus saadetud sirvikusse")
+		return
+	}
+
 	// siga.WriteContainer
 	// Salvesta faili sisaldav konteiner kettale (või saada sirvikupoolele
 	// kasutajale allalaadimiseks)

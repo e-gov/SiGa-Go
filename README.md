@@ -8,16 +8,16 @@ Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.
 
 ## Repo struktuur
 
-`analüüüs` - paar eksperimentaalset koodistruktuuri uurimise vahendit.
-`arhiiv` - igaks juhuks tallele pandud mittekasutatav kood.
-`certs` - SiGa-Go võtmed, serdid ja saladused. Kausta ei laeta üles avareposse.
-`confutil` - seadistuse sisselugemise abikood.
-`docs` - dokumentatsioon (pildifailid).
-`https` - standardpaki `net/http` laiendused.
-`ocsp` - rakendus OCSP päringu testimiseks.
-`siga` - teek `siga`, SiGa "low-level" klient.
-`static` - SiGa-Go sirvikuosa.
-`testdata` - testandmed
+- `analüüüs` - paar eksperimentaalset koodistruktuuri uurimise vahendit.
+- `arhiiv` - igaks juhuks tallele pandud mittekasutatav kood.
+- `certs` - SiGa-Go võtmed, serdid ja saladused. Kausta ei laeta üles avareposse.
+- `confutil` - seadistuse sisselugemise abikood.
+- `docs` - dokumentatsioon (pildifailid).
+- `https` - standardpaki `net/http` laiendused.
+- `ocsp` - rakendus OCSP päringu testimiseks.
+- `siga` - teek `siga`, SiGa "low-level" klient.
+- `static` - SiGa-Go sirvikuosa.
+- `testdata` - testandmed
 
 ## Taustamaterjalid
 
@@ -42,7 +42,7 @@ Järgnevad juhised on rakenduse evitamiseks lokaalses masinas (`localhost`).
 
 2) Valmista rakendusele serdid. Rakendus nõuab serti (täpsemini, serdiahelat) failis `certs/localhostchain.cert` ja privaatvõtit failis `certs/localhost.key`.
 
-3) Koosta rakenduse seadistusfail `certs/conf.json`. Vt lähemalt jaotises "Seadistamine".
+3) Koosta rakenduse seadistusfail. Vt lähemalt jaotises "Seadistamine".
 
 4) Paigalda veebisirvijasse CA sert. Chrome puhul sisesta aadressireale `chrome://settings/privacy`, vajuta jaotises `Privacy and Security` `more`-nupule, vali `Manage Certificates`, `Trusted Root Authorities`, `Import`. 
 
@@ -54,7 +54,9 @@ Järgnevad juhised on rakenduse evitamiseks lokaalses masinas (`localhost`).
 
 `https://localhost:8080`
 
-Tee läbi ID-kaardiga allkirjastamine ja m-ID-ga allkirjastamine.
+Sisesta allkirjastatav tekst.
+
+Proovi läbi ID-kaardiga allkirjastamine (vt jaotis "Allkirjastamine ID-kaardiga") ja m-ID-ga allkirjastamine (vt jaotis "Allkirjastamine m-ID-ga").
 
 m-ID-ga allkirjastamisel kasutatakse m-ID testteenust. Seetõttu on allkirjaandja isikukood ja mobiilinumbrid fikseeritud (m-ID testisik).
 
@@ -62,7 +64,11 @@ Rakendus annab ka veadiagnostikat, nt kui üritada allkirja anda SK OCSP demotee
 
 ![kuvatõmmis](docs/OCSP-viga.png)
 
-7) Tutvu rakenduse poolt loodud, allkirjastatud failidega. Vt lähemalt allpool "Näitefailid".
+7) Tutvu rakenduse poolt loodud allkirjastatud failiga `testdata/proov.asic`.
+
+![kuvatõmmis](docs/Tulemus.png)
+
+Allkirjastatud fail on ASiC-E formaadis, failitüübiga `asice` ja asub kaustas `testdata`. Allkirjastatud failide uurimiseks kasuta ID-kaardi haldusvahendit (DigiDoc4 klienti).
 
 Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
 
@@ -98,10 +104,6 @@ Seadistusfaili struktuur on järgmine:
 - `rootCAs` on SiGa serveri sert.
 
 Seadistuse eraldi osadeks on SiGa-Go HTTPS serveri serdid (vt ülal p 2).
-
-## Näitefailid
-
-Näidisrakenduse töö käigus koostatakse allkirjastatud faile. Need on ASiC-E formaadis, failitüübiga `asice` ja asuvad kaustas `testdata`. Allkirjastatud failide uurimiseks saab kasutada ID-kaardi haldusvahendit (DigiDoc4 klienti).
 
 ## Detailne kirjeldus
 
