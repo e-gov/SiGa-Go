@@ -145,8 +145,8 @@ func p2Handler(w http.ResponseWriter, req *http.Request) {
 
 	// TODO: Lae räsikonteiner SiGa-st alla
 	// Ava fail kirjutamiseks.
-	f, err := os.Create("testdata/proov.asice")
-	defer f.Close(f)
+	f, err := os.Create("allkirjad/proov.asice")
+	defer f.Close()
 	if err != nil {
 		log.Println("p2Handler: Faili ei saa avada: ", err)
 		// Saada veateade sirvikupoolele

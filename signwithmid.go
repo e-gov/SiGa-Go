@@ -18,14 +18,14 @@ import (
 // 1) moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise
 // HTTPS kliendi (CreateSIGAClient)
 // 2) alustab SiGa-ga seanssi (session)
-// 3) valib allkirjastatava faili (testdata/example_datafile.txt)
+// 3) valib allkirjastatava faili (allkirjad/example_datafile.txt)
 // 4) koostab konteineri (CreateContainer)
 // 5) teeb m-ID-ga allkirjastamise alustamise päringu
 // (StartMobileIDSigning). SiGa demo vahendab m-ID allkirjastamise testteenust.
 // 6) teeb m-ID-ga allkirjastamise seisundipäringud
 // (RequestMobileIDSigningStatus)
 // 7) salvestab konteineri (WriteContainer), faili
-// testdata/mobile-id.asice
+// allkirjad/mobile-id.asice
 // 8) kustutab konteineri SiGa-st
 // 9) suleb HTTPS kliendi (Close).
 func midHandler(w http.ResponseWriter, req *http.Request) {
@@ -78,7 +78,7 @@ func midHandler(w http.ResponseWriter, req *http.Request) {
 	const message = "Automated testing"
 
 	// Alusta väljundfail (allkirjastatud fail).
-	output, err := os.Create("testdata/mobile-id.asice")
+	output, err := os.Create("allkirjad/mobile-id.asice")
 	if err != nil {
 		log.Println("midHandler: ", err)
 		// Saada veateade sirvikupoolele.
@@ -136,6 +136,6 @@ func midHandler(w http.ResponseWriter, req *http.Request) {
 
 	log.Println("midHandler: Allkiri moodustatud")
 
-	// The file written to testdata/mobile-id.asice should be externally
+	// The file written to allkirjad/mobile-id.asice should be externally
 	// validated using e.g. DigiDoc4 Client.
 }

@@ -25,7 +25,6 @@ func CreateSIGAClient(conf siga.Conf) siga.Client {
 }
 
 // CreateServer moodustab HTTPS serveri sirvikust tulevate päringute teenindamiseks.
-// Selleks loeb sisse rakenduse konf-i, failist testdata/app.json.
 func CreateServer() {
 
 	// API käsitlejad

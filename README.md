@@ -1,15 +1,19 @@
 SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 
-Riigi allkirjastamisteenus (lühidalt SiGa) ei kata kogu allkirjastamisprotsessi, kuid pakub nõuetekohase allkirjakonteineri (ASiC-E vormingus) koostamise teenust, samuti vahendab m-ID allkirjastamisteenust ja ajatempliteenust.
+Riigi allkirjastamisteenus (lühidalt SiGa) ei kata kogu allkirjastamisprotsessi, kuid on abiks nõuetekohase allkirjakonteineri (ASiC-E vormingus) koostamisel ja vahendab m-ID allkirjastamisteenust, kehtivuskinnitus- (OSCP) ja ajatempliteenust.
 
-Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`), ühe kasutaja poolt, lokaalses masinas. 
+Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`), ühe kasutaja poolt, lokaalses masinas. Rakendus ei ole otseselt kasutatav toodangu
+veebirakenduses (sest puudub kasutaja veebiseansihaldus). Praegu ei ole teostatud
+ka allkirjastatud faili allalaadimine kasutaja sirvikust. Allkirjastatud fail 
+salvestatakse rakenduse serveripoolel kettale.
 
 ![kuvatõmmis](docs/FE-kuva-01.png)
 
 ## Repo struktuur
 
-- `analüüüs` - paar eksperimentaalset koodistruktuuri uurimise vahendit.
-- `arhiiv` - igaks juhuks tallele pandud mittekasutatav kood.
+- `allkirjad` - allkirjastatud failid. Kausta ei laeta üles avareposse.
+- `analüüs` - paar eksperimentaalset koodistruktuuri uurimise vahendit.
+- `arhiiv` - igaks juhuks tallele pandud mittekasutatav kood jm teave.
 - `certs` - SiGa-Go võtmed, serdid ja saladused. Kausta ei laeta üles avareposse.
 - `confutil` - seadistuse sisselugemise abikood.
 - `docs` - dokumentatsioon (pildifailid).
@@ -17,7 +21,6 @@ Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.
 - `ocsp` - rakendus OCSP päringu testimiseks.
 - `siga` - teek `siga`, SiGa "low-level" klient.
 - `static` - SiGa-Go sirvikuosa.
-- `testdata` - testandmed
 
 ## Taustamaterjalid
 
@@ -64,11 +67,17 @@ Rakendus annab ka veadiagnostikat, nt kui üritada allkirja anda SK OCSP demotee
 
 ![kuvatõmmis](docs/OCSP-viga.png)
 
-7) Tutvu rakenduse poolt loodud allkirjastatud failiga `testdata/proov.asic`.
+7) Tutvu rakenduse poolt loodud allkirjastatud failidega:
+
+ID-kaardiga allkirjastamisel luuakse fail `allkirjad/proov.asice`, nt:
 
 ![kuvatõmmis](docs/Tulemus.png)
 
-Allkirjastatud fail on ASiC-E formaadis, failitüübiga `asice` ja asub kaustas `testdata`. Allkirjastatud failide uurimiseks kasuta ID-kaardi haldusvahendit (DigiDoc4 klienti).
+m-ID-ga allkirjastamisel luuakse fail `allkirjad/mobile-id.asice`, nt:
+
+![kuvatõmmis](docs/Tulemus2.png)
+
+Allkirjastatud failid on ASiC-E formaadis, failitüübiga `asice` ja asuvad kaustas `allkirjad`. Allkirjastatud failide uurimiseks kasuta ID-kaardi haldusvahendit (DigiDoc4 klienti).
 
 Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
 
@@ -149,17 +158,23 @@ ID-kaardiga allkirjastamise (`Example_IDCardSigning()`) voog on järgmine:
 
 11  sirvikupool korraldab PIN2 küsimise ja allkirja andmise. Saadab allkirjaväärtuse serveripoolele.
 
-12  saadab allkirjaväärtuse SiGa-sse.
+12  serveripool saadab allkirjaväärtuse SiGa-sse (`FinalizeRemoteSigning`).
 
 `PUT /hascodecontainers/{containerid}/remotesigning/generatedSignatureId`
 
-13  salvestab konteineri (`WriteContainer`), faili `testdata/id-card.asice`. Päring:
+SiGa kannab allkirjaväärtuse räsikonteinerisse.
+
+13  seejärel serveripool pärib SiGa-st räsikonteineri (`WriteContainer`). Päring:
 
 `GET` `/hashcodecontainers/{containerID}`
+
+Serveripool lisab räsikonteinerisse andmefaili. Nii moodustub täielik allkirjakonteiner (ümbrik). Serveripool kirjutab täieliku allkirjakonteineri faili `allkirjad/id-card.asice`.
 
 14  kustutab konteineri SiGa-st. Päring:
 
 `DELETE` `/hashcodecontainers/{containerID}`
+
+(Praegu teostamata)
 
 15  suleb HTTPS kliendi (`Close`).
 
@@ -172,7 +187,7 @@ Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine 
 
 2  alustab SiGa-ga seanssi (seansi ID `session`, seansiolekukirje `status` seansilaos `storage`)
 
-3  valib allkirjastatava faili (`testdata/example_datafile.txt`)
+3  valib allkirjastatava faili (`allkirjad/example_datafile.txt`)
 
 4  teeb konteineri koostamise päringu SiGa-sse (`CreateContainer`). Päring:
 
@@ -186,7 +201,7 @@ Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine 
 
 `GET` `/hashcodecontainers/{containerID}/mobileidsigning/{signatureID}/status`
 
-7  salvestab konteineri (`WriteContainer`), faili `testdata/mobile-id.asice`. Päring:
+7  salvestab konteineri (`WriteContainer`), faili `allkirjad/mobile-id.asice`. Päring:
 
 `GET` `/hashcodecontainers/{containerID}`
 
@@ -199,12 +214,6 @@ Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine 
 Näiteallkirjastamisel kasutatakse m-ID allkirjastamise testteenust. 
 
 Voog ei sisalda (praegu) allkirjastamise õnnestumise kinnituse pärimist (`GET` `/hashcodecontainers/{containerId}/validationreport`).
-
-## Analüüs
-
-Kaustas `analüüs` on paar eksperimentaalset koodistruktuuri uurimise vahendit.
-
-
 
 
 

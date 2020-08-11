@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-// Set to true to save outputs in testdata/ for validation with external tools.
+// Set to true to save outputs in allkirjad// for validation with external tools.
 const saveFromHashcode = false
 
 func runFromHashcodeTest(t *testing.T, name string, expected error) {
@@ -19,7 +19,7 @@ func runFromHashcodeTest(t *testing.T, name string, expected error) {
 	// given
 	dst := ioutil.Discard
 	if saveFromHashcode {
-		fd, err := os.Create(fmt.Sprintf("testdata/%s_hashcode_output.asice", name))
+		fd, err := os.Create(fmt.Sprintf("allkirjad//%s_hashcode_output.asice", name))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -27,7 +27,7 @@ func runFromHashcodeTest(t *testing.T, name string, expected error) {
 		dst = fd
 	}
 
-	fd, err := os.Open(fmt.Sprintf("testdata/%s_hashcode.asice", name))
+	fd, err := os.Open(fmt.Sprintf("allkirjad//%s_hashcode.asice", name))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func runFromHashcodeTest(t *testing.T, name string, expected error) {
 		t.Fatal(err)
 	}
 
-	glob, err := filepath.Glob(fmt.Sprintf("testdata/%s_datafile*", name))
+	glob, err := filepath.Glob(fmt.Sprintf("allkirjad//%s_datafile*", name))
 	if err != nil {
 		t.Fatal(err)
 	}

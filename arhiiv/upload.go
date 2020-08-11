@@ -5,7 +5,7 @@
 
 	ctx := context.Background()
 	const session = "TestClient_UploadContainer_Succeeds"
-	container, err := os.Open("testdata/mobile-id.asice")
+	container, err := os.Open("allkirjad/mobile-id.asice")
 	if err != nil {
 		t.Fatal(err) // Will fail if TestClient_MobileIDSigning_Succeeds was skipped.
 	}
