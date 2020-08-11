@@ -27,7 +27,9 @@ const msession = "SiGA_Go_mID_Signing"
 func main() {
 	fmt.Println("SiGa-Go: Alustan tööd")
 
-	cFilePtr := flag.String("conf", "certs/config.json", "Seadistusfaili asukoht")
+	cFilePtr := flag.String(
+		"conf",
+		"certs/siga-conf-PParmakson.json", "Seadistusfaili asukoht")
 	flag.Parse()
 
 	// Loe seadistusfail.

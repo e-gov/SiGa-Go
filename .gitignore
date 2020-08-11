@@ -1,1 +1,4 @@
 certs
+*.exe
+*.key
+

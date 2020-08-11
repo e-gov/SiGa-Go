@@ -27,20 +27,6 @@ func CreateSIGAClient(conf siga.Conf) siga.Client {
 // CreateServer moodustab HTTPS serveri sirvikust tulevate päringute teenindamiseks.
 // Selleks loeb sisse rakenduse konf-i, failist testdata/app.json.
 func CreateServer() {
-	/* / Loe seadistusfail.
-	bytes, err := ioutil.ReadFile("testdata/app.json")
-	if err != nil {
-		fmt.Println("CreateServer: Viga seadistusfaili lugemisel: ", err)
-		os.Exit(1)
-	}
-
-	var conf https.ServerConf
-
-	// Parsi seadistusfail.
-	if err := json.Unmarshal(bytes, &conf); err != nil {
-		fmt.Println("CreateServer: Viga seadistusfaili parsimisel: ", err)
-		os.Exit(1)
-	} */
 
 	// API käsitlejad
 	http.Handle("/", http.FileServer(http.Dir("./static")))

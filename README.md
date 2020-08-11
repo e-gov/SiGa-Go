@@ -6,6 +6,19 @@ Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.
 
 ![kuvatõmmis](docs/FE-kuva-01.png)
 
+## Repo struktuur
+
+`analüüüs` - paar eksperimentaalset koodistruktuuri uurimise vahendit.
+`arhiiv` - igaks juhuks tallele pandud mittekasutatav kood.
+`certs` - SiGa-Go võtmed, serdid ja saladused. Kausta ei laeta üles avareposse.
+`confutil` - seadistuse sisselugemise abikood.
+`docs` - dokumentatsioon (pildifailid).
+`https` - standardpaki `net/http` laiendused.
+`ocsp` - rakendus OCSP päringu testimiseks.
+`siga` - teek `siga`, SiGa "low-level" klient.
+`static` - SiGa-Go sirvikuosa.
+`testdata` - testandmed
+
 ## Taustamaterjalid
 
 SiGa kohta vt: [tehniline dokumentatsioon](https://open-eid.github.io/allkirjastamisteenus/).
@@ -45,7 +58,7 @@ Tee läbi ID-kaardiga allkirjastamine ja m-ID-ga allkirjastamine.
 
 m-ID-ga allkirjastamisel kasutatakse m-ID testteenust. Seetõttu on allkirjaandja isikukood ja mobiilinumbrid fikseeritud (m-ID testisik).
 
-Rakendus annab ka veadiagnostikat, nt:
+Rakendus annab ka veadiagnostikat, nt kui üritada allkirja anda SK OCSP demoteenuses registreerimata ID-kaardiga, siis tuleb teade, et allkirja andmise sertifikaadi kehtivuskinnistuspäring ebaõnnestub:
 
 ![kuvatõmmis](docs/OCSP-viga.png)
 
@@ -57,9 +70,9 @@ Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
 
 SiGa-Go seadistatakse seadistusfailiga. Seadistusfaili asukoht ja nimi antakse rakenduse käivitamisel lipuga `conf`:
 
-`go run . -conf certs/config.json`
+`go run . -conf siga-conf-PParmakson/.json`
 
-Vaikimisi failinimi on `certs/config.json`.
+Vaikimisi failinimi on `certs/siga-conf-PParmakson.json`.
 
 Seadistusfaili struktuur on järgmine:
 
