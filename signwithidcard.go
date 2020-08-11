@@ -39,8 +39,9 @@ func p1Handler(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Fatal("p1Handler: Päringu keha parsimine ebaõnnestus: ", err)
 	}
-	log.Println("p1Handler: Allkirjastatav tekst: ", t.Tekst)
-	log.Println("p1Handler: Sert: ", t.Sert)
+	log.Println("p1Handler: Saadud sirvikupoolelt:")
+	log.Println("    allkirjastatav tekst: ", t.Tekst)
+	log.Println("    sert: ", t.Sert[:40] + "...")
 
 	// Tühi tekst?
 	if len(t.Tekst) == 0 {

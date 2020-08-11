@@ -29,7 +29,7 @@ Järgnevad juhised on rakenduse evitamiseks lokaalses masinas (`localhost`).
 
 2) Valmista rakendusele serdid. Rakendus nõuab serti (täpsemini, serdiahelat) failis `certs/localhostchain.cert` ja privaatvõtit failis `certs/localhost.key`.
 
-3) Koosta rakenduse seadistusfailid `certs/siga.json` ja `certs/app.json`. Vt lähemalt jaotises "Seadistamine".
+3) Koosta rakenduse seadistusfail `certs/conf.json`. Vt lähemalt jaotises "Seadistamine".
 
 4) Paigalda veebisirvijasse CA sert. Chrome puhul sisesta aadressireale `chrome://settings/privacy`, vajuta jaotises `Privacy and Security` `more`-nupule, vali `Manage Certificates`, `Trusted Root Authorities`, `Import`. 
 
@@ -57,32 +57,34 @@ Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
 
 SiGa-Go seadistatakse seadistusfailiga. Seadistusfaili asukoht ja nimi antakse rakenduse käivitamisel lipuga `conf`:
 
-`go run . -conf certs/app.json`
+`go run . -conf certs/config.json`
 
-Vaikimisi nimi on `certs/app.json`.
+Vaikimisi failinimi on `certs/config.json`.
 
 Seadistusfaili struktuur on järgmine:
 
 ````
 {
-  "sigaClient": {
-    "url": "https://dsig-demo.eesti.ee/",
-    "serviceIdentifier": "<rakenduse ID>",
-    "serviceKey": "<rakenduse salasõna>",
-    "clientTLS": {
-      "chain": "-----BEGIN CERTIFICATE...",
-      "key": "-----BEGIN RSA PRIVATE KEY..."
-    },
-    "rootCAs": [
-      "-----BEGIN CERTIFICATE..."
-    ]
-  }
+  "url": "https://dsig-demo.eesti.ee/",
+  "serviceIdentifier": "<rakenduse ID>",
+  "serviceKey": "<rakenduse salasõna>",
+  "clientTLS": {
+    "chain": "-----BEGIN CERTIFICATE...",
+    "key": "-----BEGIN RSA PRIVATE KEY..."
+  },
+  "rootCAs": [
+    "-----BEGIN CERTIFICATE..."
+  ]
 }
 ````
 
+- `url` on SiGa demokeskkonna URL.
+- `serviceIdentifier` on nimi, millega rakendus (SiGa-Go) on SiGa demokeskkonnas registreeritud.
+- `serviceKey` on rakendusele SiGa demokeskkonnas antud salasõna.
 `clientTLS.chain` ja `clientTLS.key` on rakenduse poolt SiGa poole pöördumisel kasutatav sert (või serdiahel) ja privaatvõti. SiGa demo ei kontrolli TLS-kliendi serti. Seetõttu võib olla isetehtud, vabalt valitud `Subject`-väärtusega sert.
+- `rootCAs` on SiGa serveri sert.
 
-`rootCAs` on SiGa serveri sert.
+Seadistuse eraldi osadeks on SiGa-Go HTTPS serveri serdid (vt ülal p 2).
 
 ## Näitefailid
 

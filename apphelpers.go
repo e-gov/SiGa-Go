@@ -1,46 +1,33 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	// "encoding/json"
+	// "fmt"
+	// "io/ioutil"
 	"log"
 	"net/http"
-	"os"
+	// "os"
 
 	"github.com/e-gov/SiGa-Go/siga"
-	"github.com/e-gov/SiGa-Go/https"
+	// "github.com/e-gov/SiGa-Go/https"
 )
 
 // CreateSIGAClient moodustab HTTPS kliendi SiGa poole pöördumiseks.
-// Selleks loeb sisse SiGa kliendi konf-i, failist testdata/siga.json.
-func CreateSIGAClient() siga.Client {
-	// Loe seadistusfail.
-	bytes, err := ioutil.ReadFile("testdata/siga.json")
-	if err != nil {
-		log.Fatal("CreateSIGAClient: Viga seadistusfaili lugemisel: ", err)
-	}
-
-	var conf siga.Conf
-
-	// Parsi seadistusfail.
-	if err := json.Unmarshal(bytes, &conf); err != nil {
-		log.Fatal("CreateSIGAClient: Viga seadistusfaili parsimisel: ", err)
-	}
-
+// Selleks loeb sisse SiGa kliendi konf-i, failist certs/siga.json.
+func CreateSIGAClient(conf siga.Conf) siga.Client {
 	// Moodusta HTTPS klient SiGa-ga suhtlemiseks.
 	c, err := siga.NewClient(conf)
 	if err != nil {
 		log.Fatal("CreateSIGAClient: Viga SiGa kliendi moodustamisel: ", err)
 	}
-	log.Println("CreateSIGAClient: edukas")
+	log.Println("CreateSIGAClient: SiGa klient loodud.")
 	return c
 }
 
 // CreateServer moodustab HTTPS serveri sirvikust tulevate päringute teenindamiseks.
 // Selleks loeb sisse rakenduse konf-i, failist testdata/app.json.
 func CreateServer() {
-	// Loe seadistusfail.
+	/* / Loe seadistusfail.
 	bytes, err := ioutil.ReadFile("testdata/app.json")
 	if err != nil {
 		fmt.Println("CreateServer: Viga seadistusfaili lugemisel: ", err)
@@ -53,7 +40,7 @@ func CreateServer() {
 	if err := json.Unmarshal(bytes, &conf); err != nil {
 		fmt.Println("CreateServer: Viga seadistusfaili parsimisel: ", err)
 		os.Exit(1)
-	}
+	} */
 
 	// API käsitlejad
 	http.Handle("/", http.FileServer(http.Dir("./static")))

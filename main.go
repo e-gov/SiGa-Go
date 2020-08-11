@@ -1,7 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"flag"
+	"io/ioutil"
+	"log"
 
 	"github.com/e-gov/SiGa-Go/siga"
 )
@@ -23,8 +27,24 @@ const msession = "SiGA_Go_mID_Signing"
 func main() {
 	fmt.Println("SiGa-Go: Alustan tööd")
 
+	cFilePtr := flag.String("conf", "certs/config.json", "Seadistusfaili asukoht")
+	flag.Parse()
+
+	// Loe seadistusfail.
+	bytes, err := ioutil.ReadFile(*cFilePtr)
+	if err != nil {
+		log.Fatal("SiGa-Go: Viga seadistusfaili lugemisel: ", err)
+	}
+
+	var conf siga.Conf
+
+	// Parsi seadistusfail.
+	if err := json.Unmarshal(bytes, &conf); err != nil {
+		log.Fatal("SiGa-Go: Viga seadistusfaili parsimisel: ", err)
+	}
+
 	// Loo SiGa klient.
-	sigaClient = CreateSIGAClient()
+	sigaClient = CreateSIGAClient(conf)
 	
 	// Loo HTTPS server. See peab olema peaprogrammis viimane, sest ListenAndServe
 	// juurest ei lähe täitmisjärg edasi. XXX: Uurida, parem lahendus?
