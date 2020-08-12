@@ -132,67 +132,76 @@ kasutada ka Ignite hajusmälu (ei ole käesolevas repos avaldatud).
 
 ## Allkirjastamine ID-kaardiga
 
-ID-kaardiga allkirjastamise voog on järgmine:
+ID-kaardiga allkirjastamise voog on järgmine (selgitused vt skeem järel):
 
 ![Skeem](docs/Skeem.png)
 
-1  Rakenduse kasutaja (K) sisestab kuvavormil allkirjastatava teksti.
+Osapooled:
 
-2  Kasutaja (K) vajutab nupule "Allkirjasta".
+- Kasutaja
+- Rakenduse sirvikupool (FE)
+- Rakenduse serveripool (BE)
+- SiGa klienditeek (Go pakk `siga`)
+- Seansiladu (Go pakk `storage`, mille taga on kas kõrgkäideldav Ignite mälu või lihtne põhimälus hoitav mäluteenus)
+- Riigi allkirjastamisteenus
 
-3  Rakenduse sirvikupool (F) pärib (`hwcrypto.js` abil) kasutajalt allkirjastamisserdi.
+1  Allkirjastatav tekst võib olla sisestatud kasutaja poolt või rakenduse poolt allkirjastamiseks pakutud.
 
-4  Kasutaja valib serdi ja sisestab PIN1.
+4-5  Rakenduse sirvikupool (F) pärib (`hwcrypto.js` abil) kasutajalt allkirjastamisserdi.
 
-5  F saadab POST päringuga rakenduse serveripoolele (B) allkirjastatava teksti ja kasutaja allkirjastamisserdi (päring P1):
+6  FE saadab POST päringuga rakenduse BE-le allkirjastatava teksti ja kasutaja allkirjastamisserdi (päring P1):
 
 `POST localhost:8080/p1`
 
-3  Rakenduse serveripool (B) moodustab sirvikust saadetust tekstist allkirjakonteinerisse pandava faili, koos metaandmetega (`siga.NewDataFile()`) ja
+7-8  BE moodustab sirvikust saadetust tekstist allkirjaümbrikusse pandava faili, koos metaandmetega (`siga.NewDataFile()`).
 
-4  moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`) ja
+9  BE genereerib SiGa-ga alustatav seansi ID (`isession`).
 
-5  genereerib SiGa-ga alustatav seansi ID (`isession`) ja
-
-6  teeb räsikonteineri koostamise POST päringu SiGa-sse (`siga.CreateContainer`), saates allkirjakonteinerisse pandava faili (päring P2):
+10  BE teeb räsikonteineri koostamise POST päringu SiGa klienditeeki (`siga.CreateContainer`), saates allkirjakonteinerisse pandava faili:
 
 `POST` `/hashcodecontainers`
 
-7  Riigi allkirjateenus (SiGa) moodustab räsikonteineri ja tagastab päringu P2 vastuses konteineri ID.
+11-12  Riigi allkirjastamisteenus moodustab ümbriku ja tagastab ümbriku ID.
 
-8  B moodustab seansilaos (`storage`) seansiolekukirje `status` (`siga.storage.putStatus`)
+13  SiGa klienditeek moodustab seansilaos (`storage`) seansiolekukirje `status` (`siga.storage.putStatus`)
 
-9  B saadab POST päringuga serdi SiGa-sse. Päring:
+16  BE saadab serdi SiGa klienditeegile (`StarmRemoteSigning`).
+
+18 SiGa klienditeek saadab POST päringuga serdi Riigi allkirjastamisteenusesse:
 
 `POST /hascodecontainers/{containerid}/remotesigning`
 
-7  saadab päringu P1 vastuse sirvikupoolele.
+19  Riigi allkirjastamisteenus saadab vastuses allkirjastatavad andmed, allkirjaalgoritmi ja allkirja ID.
 
-8  F korraldab serdi valimise. Sirvikupool saadab serdi serveripoolele (päring P2).
+20  SiGa klienditeek arvutab allkirjastatava räsi.
 
-10  saadab SiGa-st saadud vastuse sirvikupoolele.
+22-23 Allkirjastatav räsi ja allkirjaalgoritm saadetakse BE kaudu FE-i.
 
-11  sirvikupool korraldab PIN2 küsimise ja allkirja andmise. Saadab allkirjaväärtuse serveripoolele.
+24  FE korraldab PIN2 küsimise ja allkirja andmise. Allkirja andmine seisneb räsile krüptotoimingu rakendamises, Kasutaja allkirjastamise privaatvõtme abil.
 
-12  serveripool saadab allkirjaväärtuse SiGa-sse (`FinalizeRemoteSigning`).
+26  Antud allkiri liigub FE-st BE-i.
+
+27  BE saadab allkirjaväärtuse SiGa klienditeeki (`FinalizeRemoteSigning`).
+
+29  SiGa klienditeek saadab allkirja Riigi allkirjastamisteenusesse:
 
 `PUT /hascodecontainers/{containerid}/remotesigning/generatedSignatureId`
 
-SiGa kannab allkirjaväärtuse räsikonteinerisse.
+30 Riigi allkirjastamisteenus lisab allkirja ümbrikusse.
 
-13  seejärel serveripool pärib SiGa-st räsikonteineri (`WriteContainer`). Päring:
+34  BE pärib SiGa klienditeegist ümbriku (`WriteContainer`):
 
 `GET` `/hashcodecontainers/{containerID}`
 
-Serveripool lisab räsikonteinerisse andmefaili. Nii moodustub täielik allkirjakonteiner (ümbrik). Serveripool kirjutab täieliku allkirjakonteineri faili `allkirjad/id-card.asice`.
+38 SiGa klienditeek lisab ümbrikusse andmefaili. Nii moodustub täielik allkirjaümbrik - milles on nii allkiri kui ka allkirjastatud fail.
 
-14  kustutab konteineri SiGa-st. Päring:
+39  BE kirjutab täieliku allkirjakonteineri faili `allkirjad/id-card.asice`.
+
+xx BE kustutab ümbriku Riigi allkirjastamisteenusest:
 
 `DELETE` `/hashcodecontainers/{containerID}`
 
 (Praegu teostamata)
-
-15  suleb HTTPS kliendi (`Close`).
 
 ## Allkirjastamine m-ID-ga
 
