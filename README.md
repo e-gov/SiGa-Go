@@ -143,21 +143,21 @@ Osapooled:
 - Rakenduse serveripool (BE)
 - SiGa klienditeek (Go pakk `siga`)
 - Seansiladu (Go pakk `storage`, mille taga on kas kõrgkäideldav Ignite mälu või lihtne põhimälus hoitav mäluteenus)
-- Riigi allkirjastamisteenus
+- Riigi allkirjastamisteenus.
 
 1  Allkirjastatav tekst võib olla sisestatud kasutaja poolt või rakenduse poolt allkirjastamiseks pakutud.
 
 4-5  Rakenduse sirvikupool (F) pärib (`hwcrypto.js` abil) kasutajalt allkirjastamisserdi.
 
-6  FE saadab POST päringuga rakenduse BE-le allkirjastatava teksti ja kasutaja allkirjastamisserdi (päring P1):
+6  FE saadab POST päringuga BE-le allkirjastatava teksti ja kasutaja allkirjastamisserdi:
 
 `POST localhost:8080/p1`
 
-7-8  BE moodustab sirvikust saadetust tekstist allkirjaümbrikusse pandava faili, koos metaandmetega (`siga.NewDataFile()`).
+7-8  BE moodustab sirvikust saadetud tekstist allkirjaümbrikusse pandava faili, koos metaandmetega (`siga.NewDataFile()`).
 
 9  BE genereerib SiGa-ga alustatav seansi ID (`isession`).
 
-10  BE teeb räsikonteineri koostamise POST päringu SiGa klienditeeki (`siga.CreateContainer`), saates allkirjakonteinerisse pandava faili:
+10  BE teeb räsikonteineri koostamise POST päringu SiGa klienditeeki (`siga.CreateContainer`), saates allkirjaümbrikusse pandava faili:
 
 `POST` `/hashcodecontainers`
 
@@ -195,7 +195,7 @@ Osapooled:
 
 38 SiGa klienditeek lisab ümbrikusse andmefaili. Nii moodustub täielik allkirjaümbrik - milles on nii allkiri kui ka allkirjastatud fail.
 
-39  BE kirjutab täieliku allkirjakonteineri faili `allkirjad/id-card.asice`.
+39  BE kirjutab täieliku allkirjaümbriku faili `allkirjad/id-card.asice`.
 
 xx BE kustutab ümbriku Riigi allkirjastamisteenusest:
 
@@ -205,7 +205,7 @@ xx BE kustutab ümbriku Riigi allkirjastamisteenusest:
 
 ## Allkirjastamine m-ID-ga
 
-m-ID-ga näiteallkirjastamise voog on järgmine:
+m-ID-ga näiteallkirjastamise voog on üldjoontes järgmine:
 
 1  moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`)
 
