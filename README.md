@@ -7,7 +7,7 @@ Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.
 
 Näidisrakendus ei ole kõrgkäideldav, kuid kõrgkäideldavuse saab lisada, vahetades Go liidese `storage` teostuses praegu ühe-masina-mälu kõrgkäideldava mälu, nt Ignite vastu.
 
-Näidisrakenduses on teostatud "naiivne" ühekasutaja seansihaldus (globaalne muutuja `isession`). See tähendab, et korraga saab allkirjastada ainult üks kasutada. Tootmislahenduses tuleb teostada korralik seansihaldus lahenduse kõigi komponentide vahel (SiGa, rakenduse serveriosa, seansiladu, rakenduse sirvikuosa).
+Näidisrakenduses on teostatud "naiivne" ühekasutaja seansihaldus (globaalne muutuja `isession`). See tähendab, et korraga saab allkirjastada ainult üks kasutaja. Mitme kasutaja korral lähevad seansid sassi. Tootmislahenduses tuleb muidugi teostada korralik seansihaldus lahenduse kõigi komponentide vahel (SiGa, rakenduse serveriosa, seansiladu, rakenduse sirvikuosa).
 
 Praegu ei ole teostatud ka allkirjastatud faili allalaadimine kasutaja sirvikust. Allkirjastatud failid salvestatakse rakenduse serveripoolel kettale.
 
