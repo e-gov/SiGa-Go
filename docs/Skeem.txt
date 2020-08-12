@@ -1,0 +1,71 @@
+title Allkirjastamine ID-kaardiga
+
+actor #gray:0.5 "Kasutaja" as K
+participant #gray:0.5 "Rakenduse\nsirvikupool\(FE)" as FE
+participant #gray:0.5 "Rakenduse\nserveripool\(BE)" as BE
+participant #gray:0.5 "SiGa\nklienditeek" as siga
+database #red:0.5 "<color:#red>Seansi-\nladu" as Ladu
+participant #gray:0.5 "Riigi\nallkirjastamis-\nteenus" as RAT
+database #gray:0.5 "ketas" as ketas
+
+lifelinestyle Ladu #red
+
+autonumber 
+
+FE -> K: allkirjastatav tekst
+FE -> K: "Allkirjasta ID-kaardiga"
+K -> FE: nupuvajutus
+FE -> K: "Sertifikaadi valik"
+K -> FE: Ok
+FE -> BE: Serdisaatmispäring\nHTTP POST\n(tekst, sert)
+
+activate BE
+BE -> siga: ""NewDataFile""(\nallkirjastatav tekst)
+siga -> BE: allkirjastatav andmefail
+BE -> BE: genereeri seansi ID
+
+BE -> siga: ""CreateContainer""(seansi ID,\n allkirjastatav andmefail)
+siga -> RAT: HTTP POST\nallkirjastatav fail
+note over BE:Serdisaatmispäringu\nkäsitlemine
+RAT -> siga: ← ümbriku ID
+siga -#red> Ladu: <color:#red>""putStatus""(seansi ID, ümbriku ID)
+siga -#red> Ladu: ""<color:#red>putData""(seansi ID,\n allkirjastatav andmefail)
+siga -> BE: Ok
+
+BE -> siga: ""StartRemoteSigning""
+siga -#red> Ladu: ""<color:#red>getStatus""(seansi ID)
+siga -> RAT: HTTP POST\nümbriku ID, sert
+RAT -> siga: allkirjastatavad andmed\n allkirjaalgoritm\n allkirja ID
+siga -> siga: arvuta allkirjastatav räsi
+siga -#red> Ladu: ""<color:#red>putStatus""(seansi ID, allkirja ID)
+siga -> BE: allkirjastatav räsi\n allkirjaalgoritm
+
+BE -> FE: allkirjastatav räsi\n allkirjaalgoritm
+deactivate BE
+
+FE -> K: sisesta PIN2
+K -> FE: PIN2
+FE -> BE: Allkirjasaatmispäring\n\nHTTP POST\n (allkiri)
+activate BE
+BE -> siga: ""FinalizeRemoteSigning""\n(seansi ID)
+siga -#red> Ladu: ""<color:#red>getStatus""(seansi ID)
+siga -> RAT: HTTP PUT (ümbriku ID, allkirja ID)
+RAT -> siga: allkiri
+siga -#red> Ladu: ""<color:#red>putStatus""(seansi ID)
+siga -> BE: Ok
+
+BE -> siga: ""WriteContainer""\n(seansi ID)
+siga -#red> Ladu: ""<color:#red>getStatus""(seansi ID)
+siga -> RAT: HTTP GET (ümbriku ID)
+RAT -> siga: ümbrik (allkirjaga, failideta)
+siga -> siga: lisab fail(id) ümbrikusse
+
+BE -> ketas:ümbrik allkirja ja failidega
+BE -> FE:ümbrik allkirja ja failidega
+deactivate BE
+
+FE -> K:Allkiri antud.\nSoovi korral lae ümbrik alla
+
+
+
+

@@ -132,31 +132,42 @@ kasutada ka Ignite hajusmälu (ei ole käesolevas repos avaldatud).
 
 ## Allkirjastamine ID-kaardiga
 
-ID-kaardiga allkirjastamise (`Example_IDCardSigning()`) voog on järgmine:
+ID-kaardiga allkirjastamise voog on järgmine:
 
-1  rakenduse kasutaja sisestab kuvavormil allkirjastatava teksti.
+1  Rakenduse kasutaja (K) sisestab kuvavormil allkirjastatava teksti.
 
-2  kasutaja vajutab nupule "Allkirjasta". Rakenduse sirvikupool saadab teksti POST päringuga rakenduse serveripoolele:
+2  Kasutaja (K) vajutab nupule "Allkirjasta".
+
+3  Rakenduse sirvikupool (F) pärib (`hwcrypto.js` abil) kasutajalt allkirjastamisserdi.
+
+4  Kasutaja valib serdi ja sisestab PIN1.
+
+5  F saadab POST päringuga rakenduse serveripoolele (B) allkirjastatava teksti ja kasutaja allkirjastamisserdi (päring P1):
 
 `POST localhost:8080/p1`
 
-3  rakenduse serveripool moodustab sirvikust saadetust tekstist allkirjakonteinerisse pandava fail koos metaandmetega
+3  Rakenduse serveripool (B) moodustab sirvikust saadetust tekstist allkirjakonteinerisse pandava faili, koos metaandmetega (`siga.NewDataFile()`) ja
 
-4  rakenduse serveripool moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`) ja
+4  moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`) ja
 
-5  alustab SiGa-ga seanssi (seansi ID `session`, seansiolekukirje `status` seansilaos `storage`)
+5  genereerib SiGa-ga alustatav seansi ID (`isession`) ja
 
-6  teeb konteineri koostamise päringu SiGa-sse (`CreateContainer`). Päring:
+6  teeb räsikonteineri koostamise POST päringu SiGa-sse (`siga.CreateContainer`), saates allkirjakonteinerisse pandava faili (päring P2):
 
 `POST` `/hashcodecontainers`
 
-7  saadab päringu P1 vastuse sirvikupoolele.
+7  Riigi allkirjateenus (SiGa) moodustab räsikonteineri ja tagastab päringu P2 vastuses konteineri ID.
 
-8  sirvikupool korraldab serdi valimise. Sirvikupool saadab serdi serveripoolele (päring P2).
+8  B moodustab seansilaos (`storage`) seansiolekukirje `status` (`siga.storage.putStatus`)
 
-9  saadab serdi SiGa-sse. Päring:
+9  B saadab POST päringuga serdi SiGa-sse. Päring:
 
 `POST /hascodecontainers/{containerid}/remotesigning`
+
+
+7  saadab päringu P1 vastuse sirvikupoolele.
+
+8  F korraldab serdi valimise. Sirvikupool saadab serdi serveripoolele (päring P2).
 
 10  saadab SiGa-st saadud vastuse sirvikupoolele.
 
@@ -184,8 +195,9 @@ Serveripool lisab räsikonteinerisse andmefaili. Nii moodustub täielik allkirja
 
 ## Allkirjastamine m-ID-ga
 
-Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine (
-`Example_MobileIDSigning()`). Voog on järgmine:
+Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine. Voog on järgmine:
+
+![Skeem](docs/Skeem.png)
 
 1  moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`)
 
@@ -218,6 +230,7 @@ Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine 
 Näiteallkirjastamisel kasutatakse m-ID allkirjastamise testteenust. 
 
 Voog ei sisalda (praegu) allkirjastamise õnnestumise kinnituse pärimist (`GET` `/hashcodecontainers/{containerId}/validationreport`).
+
 
 
 
