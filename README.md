@@ -134,6 +134,8 @@ kasutada ka Ignite hajusmälu (ei ole käesolevas repos avaldatud).
 
 ID-kaardiga allkirjastamise voog on järgmine:
 
+![Skeem](docs/Skeem.png)
+
 1  Rakenduse kasutaja (K) sisestab kuvavormil allkirjastatava teksti.
 
 2  Kasutaja (K) vajutab nupule "Allkirjasta".
@@ -163,7 +165,6 @@ ID-kaardiga allkirjastamise voog on järgmine:
 9  B saadab POST päringuga serdi SiGa-sse. Päring:
 
 `POST /hascodecontainers/{containerid}/remotesigning`
-
 
 7  saadab päringu P1 vastuse sirvikupoolele.
 
@@ -195,9 +196,7 @@ Serveripool lisab räsikonteinerisse andmefaili. Nii moodustub täielik allkirja
 
 ## Allkirjastamine m-ID-ga
 
-Näiterakenduse käivitamisel tehakse kõigepealt m-ID-ga näiteallkirjastamine. Voog on järgmine:
-
-![Skeem](docs/Skeem.png)
+m-ID-ga näiteallkirjastamise voog on järgmine:
 
 1  moodustab Riigi allkirjastamisteenuse (SiGa) poole pöördumise HTTPS kliendi (`CreateSIGAClient`)
 

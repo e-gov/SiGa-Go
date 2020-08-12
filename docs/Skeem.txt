@@ -1,8 +1,10 @@
+# Valmistatud https://sequencediagram.org/ abil
+
 title Allkirjastamine ID-kaardiga
 
 actor #gray:0.5 "Kasutaja" as K
-participant #gray:0.5 "Rakenduse\nsirvikupool\(FE)" as FE
-participant #gray:0.5 "Rakenduse\nserveripool\(BE)" as BE
+participant #gray:0.5 "Rakenduse\nsirvikupool\n(FE)" as FE
+participant #gray:0.5 "Rakenduse\nserveripool\n(BE)" as BE
 participant #gray:0.5 "SiGa\nklienditeek" as siga
 database #red:0.5 "<color:#red>Seansi-\nladu" as Ladu
 participant #gray:0.5 "Riigi\nallkirjastamis-\nteenus" as RAT
@@ -17,24 +19,24 @@ FE -> K: "Allkirjasta ID-kaardiga"
 K -> FE: nupuvajutus
 FE -> K: "Sertifikaadi valik"
 K -> FE: Ok
-FE -> BE: Serdisaatmispäring\nHTTP POST\n(tekst, sert)
+FE -> BE: Serdisaatmispäring\nHTTP POST\n(allkirjastatav tekst, sert)
 
 activate BE
 BE -> siga: ""NewDataFile""(\nallkirjastatav tekst)
 siga -> BE: allkirjastatav andmefail
-BE -> BE: genereeri seansi ID
+BE -> BE: genereerib seansi ID
 
 BE -> siga: ""CreateContainer""(seansi ID,\n allkirjastatav andmefail)
-siga -> RAT: HTTP POST\nallkirjastatav fail
+siga -> RAT: HTTP POST\n(allkirjastatav fail)
 note over BE:Serdisaatmispäringu\nkäsitlemine
-RAT -> siga: ← ümbriku ID
+RAT -> siga: ümbriku ID
 siga -#red> Ladu: <color:#red>""putStatus""(seansi ID, ümbriku ID)
 siga -#red> Ladu: ""<color:#red>putData""(seansi ID,\n allkirjastatav andmefail)
 siga -> BE: Ok
 
-BE -> siga: ""StartRemoteSigning""
+BE -> siga: ""StartRemoteSigning""\n(seansi ID, sert)
 siga -#red> Ladu: ""<color:#red>getStatus""(seansi ID)
-siga -> RAT: HTTP POST\nümbriku ID, sert
+siga -> RAT: HTTP POST (ümbriku ID, sert)
 RAT -> siga: allkirjastatavad andmed\n allkirjaalgoritm\n allkirja ID
 siga -> siga: arvuta allkirjastatav räsi
 siga -#red> Ladu: ""<color:#red>putStatus""(seansi ID, allkirja ID)
@@ -45,10 +47,11 @@ deactivate BE
 
 FE -> K: sisesta PIN2
 K -> FE: PIN2
-FE -> BE: Allkirjasaatmispäring\n\nHTTP POST\n (allkiri)
+FE -> BE: Allkirjasaatmispäring\n\nHTTP POST (allkiri)
 activate BE
 BE -> siga: ""FinalizeRemoteSigning""\n(seansi ID)
 siga -#red> Ladu: ""<color:#red>getStatus""(seansi ID)
+note over BE:Allkirjasaatmispäringu\nkäsitlemine
 siga -> RAT: HTTP PUT (ümbriku ID, allkirja ID)
 RAT -> siga: allkiri
 siga -#red> Ladu: ""<color:#red>putStatus""(seansi ID)
@@ -65,7 +68,3 @@ BE -> FE:ümbrik allkirja ja failidega
 deactivate BE
 
 FE -> K:Allkiri antud.\nSoovi korral lae ümbrik alla
-
-
-
-
