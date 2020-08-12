@@ -3,10 +3,13 @@ SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 Riigi allkirjastamisteenus (lühidalt SiGa) ei kata kogu allkirjastamisprotsessi,
 kuid on abiks nõuetekohase allkirjakonteineri (ASiC-E vormingus) koostamisel ja vahendab m-ID allkirjastamisteenust, kehtivuskinnitus- (OSCP) ning ajatempliteenust.
 
-Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`), ühe kasutaja poolt, lokaalses masinas. Rakendus ei ole otseselt kasutatav toodangu
-veebirakenduses, eelkõige seetõttu, et puudub kasutaja veebiseansihaldus. Praegu ei ole teostatud
-ka allkirjastatud faili allalaadimine kasutaja sirvikust. Allkirjastatud failid 
-salvestatakse rakenduse serveripoolel kettale.
+Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`).
+
+Näidisrakendus ei ole kõrgkäideldav, kuid kõrgkäideldavuse saab lisada, vahetades Go liidese `storage` teostuses praegu ühe-masina-mälu kõrgkäideldava mälu, nt Ignite vastu.
+
+Näidisrakenduses on teostatud "naiivne" ühekasutaja seansihaldus (globaalne muutuja `isession`). See tähendab, et korraga saab allkirjastada ainult üks kasutada. Tootmislahenduses tuleb teostada korralik seansihaldus lahenduse kõigi komponentide vahel (SiGa, rakenduse serveriosa, seansiladu, rakenduse sirvikuosa).
+
+Praegu ei ole teostatud ka allkirjastatud faili allalaadimine kasutaja sirvikust. Allkirjastatud failid salvestatakse rakenduse serveripoolel kettale.
 
 ![kuvatõmmis](docs/FE-kuva-01.png)
 

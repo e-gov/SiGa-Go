@@ -62,7 +62,7 @@ func p1Handler(w http.ResponseWriter, req *http.Request) {
 
 	// Koosta konteiner, pöördumisega SiGa poole.
 	if err = sigaClient.CreateContainer(ctx, isession, datafile); err != nil {
-		log.Fatal("Example_IDCardSigning: ", err)
+		log.Fatal("p1Handler: ", err)
 	}
 	log.Println("p1Handler: Konteiner SiGa-s loodud")
 
