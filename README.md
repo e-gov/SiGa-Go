@@ -5,6 +5,8 @@ kuid on abiks nõuetekohase allkirjakonteineri (ASiC-E vormingus) koostamisel ja
 
 Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`).
 
+Rakendus teostab kaht voogu: ID-kaardiga autentimine ja m-ID-ga autentimine.
+
 Näidisrakendus ei ole paigaldatav kõrgkäideldavalt, s.t klastrina. Kui kõrgkäideldavuse saab lisada, vahetades Go liidese `storage` teostuses praegu ühe-masina-mälu kõrgkäideldava mälu, nt Ignite vastu.
 
 Näidisrakenduses on teostatud "naiivne" ühekasutaja seansihaldus (globaalne muutuja `isession`). See tähendab, et korraga saab allkirjastada ainult üks kasutaja. Mitme kasutaja korral lähevad seansid sassi. Tootmislahenduses tuleb muidugi teostada korralik seansihaldus lahenduse kõigi komponentide vahel (SiGa, rakenduse serveriosa, seansiladu, rakenduse sirvikuosa).
@@ -83,8 +85,6 @@ m-ID-ga allkirjastamisel luuakse fail `allkirjad/mobile-id.asice`, nt:
 
 Allkirjastatud failid on ASiC-E formaadis, failitüübiga `asice` ja asuvad kaustas `allkirjad`. Allkirjastatud failide uurimiseks kasuta ID-kaardi haldusvahendit (DigiDoc4 klienti).
 
-Rakenduse töö detailsem kirjeldus on allpool, jaotises "Detailne kirjeldus".
-
 ## Seadistamine
 
 SiGa-Go seadistatakse seadistusfailiga. Seadistusfaili asukoht ja nimi antakse rakenduse käivitamisel lipuga `conf`:
@@ -118,14 +118,13 @@ Seadistusfaili struktuur on järgmine:
 
 Seadistuse eraldi osadeks on SiGa-Go HTTPS serveri serdid (vt ülal p 2).
 
-## Detailne kirjeldus
+## Allkirjastamine kui hajatransaktsioon
 
-Tarkvara mõistmiseks olulisi mõisteid:
-- rakenduse serveripoole ja SiGa klienditeegi vahel luuakse seanss. Seansiil on identifikaator ("Seansi ID").
-- seansi oleku hoidmiseks kasutatakse seansimälu (`storage`). Igale aktiivsele
-seansile vastab seansimälus seansiolekukirje (tüüp `status`).
+Riigi allkirjastamisteenuse abil allkirja andmine on sisuliselt hajatransaktsioon (distributed transaction).
 
-Osapooled:
+Hajatransaktsioonis on kriitiliselt oluline tagada transaktsionaalsus s.t vältida mittekooskõlaliste olekute tekkimist. Samuti tuleb tagada, et paralleelselt käivad transaktsioonid üksteist ei segaks ega sassi läheks.
+
+Allkirjastamise hajatoimingus on kuus osapoolt:
 - Kasutaja
 - Rakenduse sirvikupool (FE)
 - Rakenduse serveripool (BE)
@@ -133,7 +132,19 @@ Osapooled:
 - Seansiladu (Go pakk `storage`, mille taga on kas kõrgkäideldav Ignite mälu või lihtne põhimälus hoitav mäluteenus)
 - Riigi allkirjastamisteenus.
 
-Rakendus teostab kaht voogu: ID-kaardiga autentimine ja m-ID-ga autentimine.
+Allkirjastamise protsessis liigub osapoolte vahel hulk päringuid:
+- Rakenduse sirvikuosa (FE) teeb serveriosale (BE) kaks HTTP POST päringut
+- FE teeb SiGa klienditeegile viis f-niväljakutset
+- SiGa klienditeek teeb Riigi autentimisteenusele neli HTTP päringut
+- SiGa klienditeek teeb seansilattu 7-8 päringut.
+
+Osapoolte vahel luuakse seansid (session). Seanssidele antakse identifikaatorid. Konkreetselt:
+- SiGa klienditeek peab Riigi autentimisteenusega seanssi ümbriku ID (`ContainerID`) abil. Ümbriku ID on juhusõne, mille Riigi autentimisteenus genereerib igale ümbrikule.
+- Ümbrikusse allkirja lisamine nõuab omaette seanssi - seda võib nimetada ümbriku seansi alamseansiks. Allkirjaseansi identifikaatoriks on allkirja ID (`SignatureID`).
+- Rakenduse serveripool ja SiGa klienditeek peavad seanssi seansilaoga (Ignite vm mäluteenus). Allkirjastamistransaktsiooni ID seansilaos on Seansi ID (`session`).
+- Rakendus autendib Kasutaja, loob ja hoiab kasutajaga veebiseanssi.
+
+Neli osapoolt (FE, BE, Seansiladu, Riigi autentimisteenus) hoiavad olekut. Osapoolte hoitavatest olekustest moodustub "hajaolek". Vaja on tagada hajaoleku kooskõlalisus. 
 
 ## Allkirjastamine ID-kaardiga
 
