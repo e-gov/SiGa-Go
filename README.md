@@ -5,7 +5,7 @@ kuid on abiks nõuetekohase allkirjakonteineri (ASiC-E vormingus) koostamisel ja
 
 Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.eesti.ee/`).
 
-Näidisrakendus ei ole kõrgkäideldav, kuid kõrgkäideldavuse saab lisada, vahetades Go liidese `storage` teostuses praegu ühe-masina-mälu kõrgkäideldava mälu, nt Ignite vastu.
+Näidisrakendus ei ole paigaldatav kõrgkäideldavalt, s.t klastrina. Kui kõrgkäideldavuse saab lisada, vahetades Go liidese `storage` teostuses praegu ühe-masina-mälu kõrgkäideldava mälu, nt Ignite vastu.
 
 Näidisrakenduses on teostatud "naiivne" ühekasutaja seansihaldus (globaalne muutuja `isession`). See tähendab, et korraga saab allkirjastada ainult üks kasutaja. Mitme kasutaja korral lähevad seansid sassi. Tootmislahenduses tuleb muidugi teostada korralik seansihaldus lahenduse kõigi komponentide vahel (SiGa, rakenduse serveriosa, seansiladu, rakenduse sirvikuosa).
 
@@ -121,29 +121,25 @@ Seadistuse eraldi osadeks on SiGa-Go HTTPS serveri serdid (vt ülal p 2).
 ## Detailne kirjeldus
 
 Tarkvara mõistmiseks olulisi mõisteid:
-- rakenduse ja SiGa teenuse vahel luuakse seanss. Seansi identifikaatorit nimetatakse
-koodis `session`.
+- rakenduse serveripoole ja SiGa klienditeegi vahel luuakse seanss. Seansiil on identifikaator ("Seansi ID").
 - seansi oleku hoidmiseks kasutatakse seansimälu (`storage`). Igale aktiivsele
 seansile vastab seansimälus seansiolekukirje (tüüp `status`).
--  Rakendus ei ole 
-paigaldatav kõrgkäideldavana s.t klastrina. Seansimäluks kasutatakse rakenduse mälus
-hoitavat lihtsat struktuuri. Kuid kood on struktureeritud nii, et vajadusel saab
-kasutada ka Ignite hajusmälu (ei ole käesolevas repos avaldatud).
-
-## Allkirjastamine ID-kaardiga
-
-ID-kaardiga allkirjastamise voog on järgmine (selgitused vt skeem järel):
-
-![Skeem](docs/Skeem.png)
 
 Osapooled:
-
 - Kasutaja
 - Rakenduse sirvikupool (FE)
 - Rakenduse serveripool (BE)
 - SiGa klienditeek (Go pakk `siga`)
 - Seansiladu (Go pakk `storage`, mille taga on kas kõrgkäideldav Ignite mälu või lihtne põhimälus hoitav mäluteenus)
 - Riigi allkirjastamisteenus.
+
+Rakendus teostab kaht voogu: ID-kaardiga autentimine ja m-ID-ga autentimine.
+
+## Allkirjastamine ID-kaardiga
+
+ID-kaardiga allkirjastamise voog on järgmine (selgitused vt skeemi järel):
+
+![Skeem](docs/Skeem.png)
 
 1  Allkirjastatav tekst võib olla sisestatud kasutaja poolt või rakenduse poolt allkirjastamiseks pakutud.
 
