@@ -202,7 +202,7 @@ ID-kaardiga allkirjastamise voog on järgmine (selgitused vt skeemi järel):
 
 40 SiGa klienditeek lisab ümbrikusse andmefaili. Nii moodustub täielik allkirjaümbrik - milles on nii allkiri kui ka allkirjastatud fail.
 
-41  BE kirjutab täieliku allkirjaümbriku kettale, faili `allkirjad/id-card.asice`.
+42  BE kirjutab täieliku allkirjaümbriku kettale, faili `allkirjad/id-card.asice`.
 
 xx BE kustutab ümbriku Riigi allkirjastamisteenusest:
 
