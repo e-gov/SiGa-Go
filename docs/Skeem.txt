@@ -62,10 +62,11 @@ siga -> BE: Ok
 BE -> siga: ""WriteContainer""\n(seansi ID)
 siga -#red> Ladu: ""<color:#red>getStatus""(seansi ID)
 siga -> RAT: HTTP GET (ümbriku ID)
-RAT -> siga: ümbrik (allkirjaga, failideta)
-siga -> siga: lisab fail(id) ümbrikusse
+RAT -> siga: ümbrik (allkirjaga, failita)
+siga -> siga: lisab faili ümbrikusse
+siga -> BE: ümbrik allkirja ja failiga
 
-BE -> ]:salvestab ümbriku allkirja ja failidega kettale
+BE -> ]:salvestab ümbriku allkirja ja failiga kettale
 BE -> FE:ümbrik allkirja ja failidega
 deactivate BE
 
