@@ -8,7 +8,6 @@ participant #gray:0.5 "Rakenduse\nserveripool\n(BE)" as BE
 participant #gray:0.5 "SiGa\nklienditeek" as siga
 database #red:0.5 "<color:#red>Seansi-\nladu" as Ladu
 participant #gray:0.5 "Riigi\nallkirjastamis-\nteenus" as RAT
-database #gray:0.5 "ketas" as ketas
 
 lifelinestyle Ladu #red
 
@@ -29,6 +28,7 @@ BE -> BE: genereerib seansi ID
 BE -> siga: ""CreateContainer""(seansi ID,\n allkirjastatav andmefail)
 siga -> RAT: HTTP POST\n(allkirjastatav fail)
 note over BE:Serdisaatmispäringu\nkäsitlemine
+RAT -> RAT: moodustab ümriku
 RAT -> siga: ümbriku ID
 siga -#red> Ladu: <color:#red>""putStatus""(seansi ID, ümbriku ID)
 siga -#red> Ladu: ""<color:#red>putData""(seansi ID,\n allkirjastatav andmefail)
@@ -37,6 +37,7 @@ siga -> BE: Ok
 BE -> siga: ""StartRemoteSigning""\n(seansi ID, sert)
 siga -#red> Ladu: ""<color:#red>getStatus""(seansi ID)
 siga -> RAT: HTTP POST (ümbriku ID, sert)
+RAT -> RAT: kontrollib serdi\nkehtivust (teeb\nOCSP päringu)
 RAT -> siga: allkirjastatavad andmed\n allkirjaalgoritm\n allkirja ID
 siga -> siga: arvuta allkirjastatav räsi
 siga -#red> Ladu: ""<color:#red>putStatus""(seansi ID, allkirja ID)
@@ -53,7 +54,7 @@ BE -> siga: ""FinalizeRemoteSigning""\n(seansi ID)
 siga -#red> Ladu: ""<color:#red>getStatus""(seansi ID)
 note over BE:Allkirjasaatmispäringu\nkäsitlemine
 siga -> RAT: HTTP PUT (ümbriku ID, allkirja ID, allkiri)
-RAT -> RAT: lisab allkirja ümbrikusse
+RAT -> RAT: lisab allkirja ümbrikusse\nvõtab ajatempli
 RAT -> siga: Ok
 siga -#red> Ladu: ""<color:#red>putStatus""(seansi ID)
 siga -> BE: Ok
@@ -64,7 +65,7 @@ siga -> RAT: HTTP GET (ümbriku ID)
 RAT -> siga: ümbrik (allkirjaga, failideta)
 siga -> siga: lisab fail(id) ümbrikusse
 
-BE -> ketas:ümbrik allkirja ja failidega
+BE -> ]:salvestab ümbriku allkirja ja failidega kettale
 BE -> FE:ümbrik allkirja ja failidega
 deactivate BE
 

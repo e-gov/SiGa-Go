@@ -168,41 +168,41 @@ ID-kaardiga allkirjastamise voog on järgmine (selgitused vt skeemi järel):
 
 `POST` `/hashcodecontainers`
 
-11-12  Riigi allkirjastamisteenus moodustab ümbriku ja tagastab ümbriku ID.
+11-13  Riigi allkirjastamisteenus moodustab ümbriku ja tagastab ümbriku ID.
 
-13  SiGa klienditeek moodustab seansilaos (`storage`) seansiolekukirje `status` (`siga.storage.putStatus`)
+14  SiGa klienditeek moodustab seansilaos (`storage`) seansiolekukirje `status` (`siga.storage.putStatus`)
 
-16  BE saadab serdi SiGa klienditeegile (`StarmRemoteSigning`).
+17  BE saadab serdi SiGa klienditeegile (`StarmRemoteSigning`).
 
-18 SiGa klienditeek saadab POST päringuga serdi Riigi allkirjastamisteenusesse:
+19 SiGa klienditeek saadab POST päringuga serdi Riigi allkirjastamisteenusesse:
 
 `POST /hascodecontainers/{containerid}/remotesigning`
 
-19  Riigi allkirjastamisteenus saadab vastuses allkirjastatavad andmed, allkirjaalgoritmi ja allkirja ID.
+21  Riigi allkirjastamisteenus saadab vastuses allkirjastatavad andmed, allkirjaalgoritmi ja allkirja ID.
 
-20  SiGa klienditeek arvutab allkirjastatava räsi.
+22  SiGa klienditeek arvutab allkirjastatava räsi.
 
-22-23 Allkirjastatav räsi ja allkirjaalgoritm saadetakse BE kaudu FE-i.
+24-25 Allkirjastatav räsi ja allkirjaalgoritm saadetakse BE kaudu FE-i.
 
-24  FE korraldab PIN2 küsimise ja allkirja andmise. Allkirja andmine seisneb räsile krüptotoimingu rakendamises, Kasutaja allkirjastamise privaatvõtme abil.
+26  FE korraldab PIN2 küsimise ja allkirja andmise. Allkirja andmine seisneb räsile krüptotoimingu rakendamises, Kasutaja allkirjastamise privaatvõtme abil.
 
-26  Antud allkiri liigub FE-st BE-i.
+28  Antud allkiri liigub FE-st BE-i.
 
-27  BE saadab allkirjaväärtuse SiGa klienditeeki (`FinalizeRemoteSigning`).
+29  BE saadab allkirjaväärtuse SiGa klienditeeki (`FinalizeRemoteSigning`).
 
-29  SiGa klienditeek saadab allkirja Riigi allkirjastamisteenusesse:
+31  SiGa klienditeek saadab allkirja Riigi allkirjastamisteenusesse:
 
 `PUT /hascodecontainers/{containerid}/remotesigning/generatedSignatureId`
 
-30 Riigi allkirjastamisteenus lisab allkirja ümbrikusse.
+32 Riigi allkirjastamisteenus lisab allkirja ümbrikusse.
 
-34  BE pärib SiGa klienditeegist ümbriku (`WriteContainer`):
+36  BE pärib SiGa klienditeegist ümbriku (`WriteContainer`):
 
 `GET` `/hashcodecontainers/{containerID}`
 
-38 SiGa klienditeek lisab ümbrikusse andmefaili. Nii moodustub täielik allkirjaümbrik - milles on nii allkiri kui ka allkirjastatud fail.
+40 SiGa klienditeek lisab ümbrikusse andmefaili. Nii moodustub täielik allkirjaümbrik - milles on nii allkiri kui ka allkirjastatud fail.
 
-39  BE kirjutab täieliku allkirjaümbriku faili `allkirjad/id-card.asice`.
+41  BE kirjutab täieliku allkirjaümbriku kettale, faili `allkirjad/id-card.asice`.
 
 xx BE kustutab ümbriku Riigi allkirjastamisteenusest:
 
