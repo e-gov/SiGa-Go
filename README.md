@@ -1,6 +1,6 @@
 SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 
-* [Ülevaade](#ulevaade)
+* [Ülevaade](#ülevaade)
 * [Repo struktuur](#repo-struktuur)
 * [Taustamaterjalid](#taustamaterjalid)
 * [Eeldused](#eeldused)
