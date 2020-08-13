@@ -1,5 +1,17 @@
 SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 
+* [Ülevaade](#ulevaade)
+* [Repo struktuur](#repo-struktuur)
+* [Taustamaterjalid](#taustamaterjalid)
+* [Eeldused](#eeldused)
+* [Kasutamine](#kasutamine)
+* [Seadistamine](#seadistamine)
+* [Allkirjastamine kui hajatransaktsioon](#allkirjastamine-kui-hajatransaktsioon)
+* [Allkirjastamine ID-kaardiga](#allkirjastamine-id-kaardiga)
+* [Allkirjastamine m-ID-ga](#allkirjastamine-m-id-ga)
+
+## Ülevaade
+
 Riigi allkirjastamisteenus (lühidalt SiGa) ei kata kogu allkirjastamisprotsessi,
 kuid on abiks nõuetekohase allkirjakonteineri (ASiC-E vormingus) koostamisel ja vahendab m-ID allkirjastamisteenust, kehtivuskinnitus- (OSCP) ning ajatempliteenust.
 
