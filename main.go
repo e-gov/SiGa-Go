@@ -1,9 +1,10 @@
+// SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -15,7 +16,7 @@ import (
 // fikseeritud seansi ID väärtused (session).
 // See on vastuvõetav, kuna näidisrakendus on mõeldud kasutamiseks
 // lokaalses masinas, ühe, aeglaselt tegutseva kasutaja poolt.
-// Tootmisrakendus muidugi vajab korralikku seansihaldust, kogu ahela 
+// Tootmisrakendus muidugi vajab korralikku seansihaldust, kogu ahela
 // Sirvikurakendus <-> Serverirakendus <-> SiGa vahel.
 var sigaClient siga.Client
 
@@ -47,11 +48,11 @@ func main() {
 
 	// Loo SiGa klient.
 	sigaClient = CreateSIGAClient(conf)
-	
+
 	// Loo HTTPS server. See peab olema peaprogrammis viimane, sest ListenAndServe
 	// juurest ei lähe täitmisjärg edasi. XXX: Uurida, parem lahendus?
 	CreateServer()
-	
+
 	// TODO: Kas sigaClient sulgemine on vajalik?
 	// 	defer c.Close()
 }
