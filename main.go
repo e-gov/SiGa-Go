@@ -24,7 +24,9 @@ var sigaClient siga.Client
 const isession = "SiGA_Go_IDCard_Signing"
 const msession = "SiGA_Go_mID_Signing"
 
-// Peaprogramm.
+// main loeb sisse SiGa-Go seadistuse, loob ja käivitab HTTPS kliendi Riigi
+// allkirjastamisteenusega suhtlemiseks ja HTTPS serveri kasutajaliidesest
+// saabuvate päringute teenindamiseks.
 func main() {
 	fmt.Println("SiGa-Go: Alustan tööd")
 
