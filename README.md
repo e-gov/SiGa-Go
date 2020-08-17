@@ -19,11 +19,15 @@ Näidisrakendus on mõeldud kasutamiseks SiGa demoteenusega (`https://dsig-demo.
 
 Rakendus teostab kaht voogu: ID-kaardiga autentimine ja m-ID-ga autentimine.
 
-Näidisrakendus ei ole paigaldatav kõrgkäideldavalt, s.t klastrina. Kui kõrgkäideldavuse saab lisada, vahetades Go liidese `storage` teostuses praegu ühe-masina-mälu kõrgkäideldava mälu, nt Ignite vastu.
+Näidisrakendus ei ole paigaldatav kõrgkäideldavalt, s.t klastrina. Kuid kõrgkäideldavuse saab lisada, vahetades Go liidese `storage` teostuses praegu ühe-masina-mälu kõrgkäideldava mälu, nt Ignite vastu.
 
 Näidisrakenduses on teostatud "naiivne" ühekasutaja seansihaldus (globaalne muutuja `isession`). See tähendab, et korraga saab allkirjastada ainult üks kasutaja. Mitme kasutaja korral lähevad seansid sassi. Tootmislahenduses tuleb muidugi teostada korralik seansihaldus lahenduse kõigi komponentide vahel (SiGa, rakenduse serveriosa, seansiladu, rakenduse sirvikuosa).
 
 Praegu ei ole teostatud ka allkirjastatud faili allalaadimine kasutaja sirvikust. Allkirjastatud failid salvestatakse rakenduse serveripoolel kettale.
+
+Rakenduse kood on publitseeritud GitHub-is ja Go üldises pakivaramus pkg.go.dev - [https://pkg.go.dev/mod/github.com/e-gov/SiGa-Go](https://pkg.go.dev/mod/github.com/e-gov/SiGa-Go).
+
+Kasutajaliides:
 
 ![kuvatõmmis](docs/FE-kuva-01.png)
 
