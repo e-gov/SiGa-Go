@@ -28,7 +28,7 @@ Väljaandja serdi asukoht kettal on praegu programmi sisse kirjutatud: `../certs
 
 ## Serdi kehtivuse kontrollimine muude vahenditega.
 
-Serdi kehtivust saab kontrollida ka online-teenustega, nt `https://decoder.link/ocsp`. Online-teenuste töö põhineb asjaolul, et kehtivuskinnitusteenuse URL tavaliselt kantakse serdile. Nt ID-testkaardi puhul on serdil kehtivuskinnitusteenuse ULR `http://aia.sk.ee/esteid2015`. Sinna tehakse ka päring.
+Serdi kehtivust saab kontrollida ka online-teenustega, nt [https://decoder.link/ocsp](https://decoder.link/ocsp). Online-teenuste töö põhineb asjaolul, et kehtivuskinnitusteenuse URL tavaliselt kantakse serdile. Nt ID-testkaardi puhul on serdil kehtivuskinnitusteenuse ULR `http://aia.sk.ee/esteid2015`. Sinna tehakse ka päring.
 
 
 
