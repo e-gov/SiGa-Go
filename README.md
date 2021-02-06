@@ -1,5 +1,7 @@
 SiGa-Go on Riigi allkirjastamisteenust kasutav Go-keelne näidisrakendus.
 
+Repos, kaustas `üheaegne` on ka üheaegse allkirjastamise lahenduse kavand.
+
 * [Ülevaade](#ülevaade)
 * [Repo struktuur](#repo-struktuur)
 * [Taustamaterjalid](#taustamaterjalid)
