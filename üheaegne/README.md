@@ -66,9 +66,9 @@ ALGORITM Allkirjastamise 1. takti (Kasutaja pöördumise **startSigning(SID, FID
 
 ````
 x - - - - - Kriitiline lõik (Ignite transaktsioon) - - - -x
-IF TxR(FID) ei eksisteeri THEN              # Üheaegse allkirjastamise transaktsioon eksisteerib?
+IF TxR(FID) ei eksisteeri THEN            # Üheaegse allkirjastamise transaktsioon eksisteerib?
     loo TxR                                           # Loo transaktsioonikirje
-    IF Ü(FID) eksisteerib THEN               # Ümbrik AB-s eksisteerib?
+    IF Ü(FID) eksisteerib THEN             # Ümbrik AB-s eksisteerib?
         readÜ(FID)                                  # Loe ümbrik AB-st
         upload(Ü)                                   # Saada ümbrik SiGa-sse; loo seanss SiGa-ga
     ELSE
@@ -82,16 +82,16 @@ Vahenda startSigning operatsioon SiGa-sse
 ALGORITM Allkirjastamise 2. takti (Kasutaja pöördumise **finaliseSigning(SID, FID))** käsitlemine:
 
 ````
-IF TxR(SID, FID) ei eksisteeri THEN                         # Allkirjastamise 2. taktiks peab ümbrik
+IF TxR(SID, FID) ei eksisteeri THEN                      # Allkirjastamise 2. taktiks peab ümbrik
     viga; EXIT                                                         # juba SiGa-s olema. 
 Vahenda finaliseSigning operatsioon SiGa-sse
-download(ÜID)                                                     # Päri ümbrik SiGa-st
+download(ÜID)                                                    # Päri ümbrik SiGa-st
 writeÜ(FID, Ü)                                                      # Kirjuta ümbrik AB-i
 Eemalda SID transaktsioonikirjest TxR
 x - - - - - Kriitiline lõik (Ignite transaktsioon) - - - -x
-IF SID-e transaktsioonikirjes == 0 THEN                # Viimane allkirjastaja?
+IF SID-e transaktsioonikirjes == 0 THEN             # Viimane allkirjastaja?
     close(ÜID)                                                        # Lõpeta seanss SiGa-ga
-    eemalda TxR                                                     # Eemalda transaktsioonikirje
+    eemalda TxR                                                    # Eemalda transaktsioonikirje
 x - - - - - - - - Kriitilise lõigu lõpp - - - - - - - - - - - -x
 ````
 
