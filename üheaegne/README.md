@@ -65,34 +65,34 @@ Algoritmides on märgitud kriitilised lõigud. Kriitiline lõik tähendab, et, e
 ALGORITM Allkirjastamise 1. takti (Kasutaja pöördumise **startSigning(SID, FID))** käsitlemine:
 
 ````
-x - - - - - Kriitiline lõik (Ignite transaktsioon) - - - -x
-IF TxR(FID) ei eksisteeri THEN            # Üheaegse allkirjastamise transaktsioon eksisteerib?
-    loo TxR                                           # Loo transaktsioonikirje
+x - - Kriitiline lõik (Ignite txn) - - - x
+IF TxR(FID) ei eksisteeri THEN             # Üheaegse allkirjastamise transaktsioon eksisteerib?
+    loo TxR                                # Loo transaktsioonikirje
     IF Ü(FID) eksisteerib THEN             # Ümbrik AB-s eksisteerib?
-        readÜ(FID)                                  # Loe ümbrik AB-st
-        upload(Ü)                                   # Saada ümbrik SiGa-sse; loo seanss SiGa-ga
+        readÜ(FID)                         # Loe ümbrik AB-st
+        upload(Ü)                          # Saada ümbrik SiGa-sse; loo seanss SiGa-ga
     ELSE
-        readFile(FID)                               # Loe fail AB-st
-        create(F)                                     # Saada fail SiGa-sse; loo seanss SiGa-ga
-x - - - - - - - - Kriitilise lõigu lõpp - - - - - - - - - - - -x
-Lisa SID transaktsioonikirjesse TxR       # Märgi kasutaja SID seos transaktsiooniga
+        readFile(FID)                      # Loe fail AB-st
+        create(F)                          # Saada fail SiGa-sse; loo seanss SiGa-ga
+x - - Kriitilise lõigu lõpp -  - -- - - x
+Lisa SID transaktsioonikirjesse TxR        # Märgi kasutaja SID seos transaktsiooniga
 Vahenda startSigning operatsioon SiGa-sse        
 ````
 
 ALGORITM Allkirjastamise 2. takti (Kasutaja pöördumise **finaliseSigning(SID, FID))** käsitlemine:
 
 ````
-IF TxR(SID, FID) ei eksisteeri THEN                      # Allkirjastamise 2. taktiks peab ümbrik
-    viga; EXIT                                                         # juba SiGa-s olema. 
-Vahenda finaliseSigning operatsioon SiGa-sse
-download(ÜID)                                                    # Päri ümbrik SiGa-st
-writeÜ(FID, Ü)                                                      # Kirjuta ümbrik AB-i
+IF TxR(SID, FID) ei eksisteeri THEN         # Allkirjastamise 2. taktiks peab ümbrik
+    viga; EXIT                              # juba SiGa-s olema. 
+Vahenda finaliseSigning op-n SiGa-sse
+download(ÜID)                               # Päri ümbrik SiGa-st
+writeÜ(FID, Ü)                              # Kirjuta ümbrik AB-i
 Eemalda SID transaktsioonikirjest TxR
-x - - - - - Kriitiline lõik (Ignite transaktsioon) - - - -x
-IF SID-e transaktsioonikirjes == 0 THEN             # Viimane allkirjastaja?
-    close(ÜID)                                                        # Lõpeta seanss SiGa-ga
-    eemalda TxR                                                    # Eemalda transaktsioonikirje
-x - - - - - - - - Kriitilise lõigu lõpp - - - - - - - - - - - -x
+x - - Kriitiline lõik (Ignite txn) - - - x
+IF SID-e transaktsioonikirjes == 0 THEN     # Viimane allkirjastaja?
+    close(ÜID)                              # Lõpeta seanss SiGa-ga
+    eemalda TxR                             # Eemalda transaktsioonikirje
+x - - Kriitilise lõigu lõpp -  - -- - - x
 ````
 
 ALGORITM **timeout(TxID)**:
